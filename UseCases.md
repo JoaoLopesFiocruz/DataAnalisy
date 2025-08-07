@@ -97,7 +97,7 @@
 ### MF
     1. The user login in the website.
     2. The user will see in the main statistics about the theme in the main page
-## UC3 - balances overview
+## UC3 - Balances overview
 ### Actor
 - User
 ### MF
@@ -225,4 +225,89 @@
     6. The system display the search field.
     7. The user fill out the field.
     8. The sytem filter the list with the bill with that name.
-    
+## UC7 - Expenses view.
+### Actor
+- User
+### MF
+    1. The user login in the website.
+    2. The user be redirected to the main page.
+    3. The system display a button to view the expenses.
+    4. The user click on button.
+    5. The system show the datas about expenses.
+### AF1 - Time comparation
+    1. The user login in the website.
+    2. The user be redirected to the main page.
+    3. The system display a button to view the expenses.
+    4. The user click on button.
+    5. The system show the expenses expenses during the year grouped by months.
+    6. The sytem display a button to change to change grouping.
+    7. The user click on this button and change the grouping.
+    8. The system show the expenses expenses during the year grouped according to the grouping chosen by user.
+### AF2 - Expenses search
+    1. The user login in the website.
+    2. The user be redirected to the main page.
+    3. The system display a button to view the expenses.
+    4. The user click on button.
+    5. The system show the expenses during the year grouped by months.
+    6. The system display a field to search the expense.
+    7. The user fill out the field.
+    8. The system search that expense.
+## UC7 - Goal view.
+### Actor
+- User
+### MF
+    1. The user login in the website.
+    2. The user be redirected to the main page.
+    3. The system display a button to view the goal.
+    4. The user click on button.
+    5. The system show the datas about goal.
+### AF1 - Time comparation
+    1. The user login in the website.
+    2. The user be redirected to the main page.
+    3. The system display a button to view the goal.
+    4. The user click on button.
+    5. The system show the datas about goal year in a time range.
+    6. The system display a field to switch the time range.
+    7. The system show the datas about goal year in the time range chosen by user.
+### AF2 - Goal search
+    1. The user login in the website.
+    2. The user be redirected to the main page.
+    3. The system display a button to view the goal.
+    4. The user click on button.
+    5. The system show the datas about goal year in a time range.
+    6. The system display a field to search the expense.
+    7. The user fill out the field.
+    8. The system search that goal.
+## UC8 - Goal edit.
+### Actor
+- User
+### MF
+    1. The user login in the website.
+    2. The user be redirected to the main page.
+    3. The system display a button to view the goal.
+    4. The user click on button.
+    5. The system show the datas about goal with the button to edit.
+    6. The user clicks the button
+    7. The system open a modal to write the new value.
+    8. The system validate.
+    9. The system edit that goal if the data is correct.
+### AF1 - Invalid data
+    1. The user login in the website.
+    2. The user be redirected to the main page.
+    3. The system display a button to view the goal.
+    4. The user click on button.
+    5. The system show the datas about goal with the button to edit.
+    6. The user clicks the button
+    7. The system open a modal to write the new value.
+    8. The system validate.
+    9. The system returns that the information is incorrect, if the data is incorrect.
+### AF1 - Close modal
+    1. The user login in the website.
+    2. The user be redirected to the main page.
+    3. The system display a button to view the goal.
+    4. The user click on button.
+    5. The system show the datas about goal with the button to edit.
+    6. The user clicks the button
+    7. The system open a modal to write the new value with the close button.
+    8. The user click on button.
+    9. The system close the modal.
