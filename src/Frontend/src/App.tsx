@@ -1,35 +1,12 @@
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts';
-
-const dados = [
-  { nome: 'Jan', vendas: 400 },
-  { nome: 'Fev', vendas: 300 },
-  { nome: 'Mar', vendas: 200 },
-  { nome: 'Abr', vendas: 278 },
-  { nome: 'Mai', vendas: 189 },
-];
-
 export default function App() {
   return (
-    <div style={{ width: '100%', height: 400 }}>
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={dados}>
-          <CartesianGrid stroke="#ccc" />
-          <XAxis dataKey="nome" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Line type="monotone" dataKey="vendas" stroke="#8884d8" />
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
-  );
+    <>
+      <div className="mx-auto mt-[155px]">
+          <div className="text-center gap-[24px] mb-[73px] flex flex-col">
+            <h1 className="font-inter">Welcolme to the  <br /> <p className="">Finebank-Financila Mangement Dashboard</p></h1> 
+            <p className="text-[#9F9F9F] font-normal">This file is totally free for personal project & education purpose, for <br /> commercial license please contact us</p>
+          </div>
+      </div>
+    </>
+  )
 }

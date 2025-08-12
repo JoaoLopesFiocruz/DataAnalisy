@@ -1,4 +1,19 @@
+# Link list
 # Use Cases
+1. [Login](#uc1---login)
+2. [Create acount](#uc2---create-account )
+3. [Data view](#uc3---data-overview ) 
+4. [Balances overview](#uc4---balances-overview ) 
+5. [Balance delete](#uc5---balance-delete) 
+6. [Balance create](#uc6---balance-create) 
+7. [Transactions view](#uc7---transactions-view) 
+8. [Bill view](#uc8---bill-view)
+9. [Expenses view](#uc9---expenses-view)
+10. [Goal view](#uc10---goal-view)
+11. [Goal edit](#uc11---goal-edit)
+12. [Create goal](#uc12---create-goal)
+13. [View profile](#uc13---view-profile)
+14. [Edit profile](#uc14---edit-profile)
 ## UC1 - Login
 ### Actor
 - User
@@ -97,7 +112,7 @@
 ### MF
     1. The user login in the website.
     2. The user will see in the main statistics about the theme in the main page
-## UC3 - Balances overview
+## UC4 - Balances overview
 ### Actor
 - User
 ### MF
@@ -122,7 +137,7 @@
     5. The system display cards with the the account number and total amount, card flag,total amont and search field.
     6. The user digit the card name.
     7. The systen search that card and show.
-## UC4 - Balance delete.
+## UC5 - Balance delete.
 ### Actor
 - User
 ### MF
@@ -136,7 +151,7 @@
     8. The user click on the confirm button.
     9. The card is removed and the the cards exibed is reloaded
 
-## UC5 - Balance create.
+## UC6 - Balance create.
 ### Actor
 - User
 ### MF    
@@ -170,7 +185,7 @@
     7. The system open the account create modal.
     8. The user fill out the form with a account number of a registered account.
     9. The system return the account already created message.
-## UC6 - Transactions view.
+## UC7 - Transactions view.
 ### Actor
 - User
 ### MF
@@ -207,7 +222,7 @@
     7. The user fill out the search field.
     8. The system filter the transactionss.
 
-## UC6 - Bill view.
+## UC8 - Bill view.
 ### Actor
 - User
 ### MF
@@ -225,7 +240,7 @@
     6. The system display the search field.
     7. The user fill out the field.
     8. The sytem filter the list with the bill with that name.
-## UC7 - Expenses view.
+## UC9 - Expenses view.
 ### Actor
 - User
 ### MF
@@ -252,7 +267,7 @@
     6. The system display a field to search the expense.
     7. The user fill out the field.
     8. The system search that expense.
-## UC7 - Goal view.
+## UC10 - Goal view.
 ### Actor
 - User
 ### MF
@@ -278,7 +293,7 @@
     6. The system display a field to search the expense.
     7. The user fill out the field.
     8. The system search that goal.
-## UC8 - Goal edit.
+## UC11 - Goal edit.
 ### Actor
 - User
 ### MF
@@ -301,7 +316,7 @@
     7. The system open a modal to write the new value.
     8. The system validate.
     9. The system returns that the information is incorrect, if the data is incorrect.
-### AF1 - Close modal
+### AF2 - Close modal
     1. The user login in the website.
     2. The user be redirected to the main page.
     3. The system display a button to view the goal.
@@ -311,3 +326,76 @@
     7. The system open a modal to write the new value with the close button.
     8. The user click on button.
     9. The system close the modal.
+## UC12 - Create goal
+### Actor
+- User
+### MF
+    1. The user login in the website.
+    2. The user be redirected to the main page.
+    3. The system display a button to view the goal.
+    4. The user click on button.
+    5. The system show the datas about goal with the button to create a goal.
+    6. The user clicks the button
+    7. The system open a modal to write the new goal data.
+    8. The system validate.
+    9. The system edit that goal if the data is correct.
+### AF1 - Invalid data
+    1. The user login in the website.
+    2. The user be redirected to the main page.
+    3. The system display a button to view the goal.
+    4. The user click on button.
+    5. The system show the datas about goal with the button to create a new goal.
+    6. The user clicks the button
+    7. The system open a modal to write the new goal data.
+    8. The system validate.
+    9. The system returns that the information is incorrect, if the data is incorrect.
+### AF2 - Close modal
+    1. The user login in the website.
+    2. The user be redirected to the main page.
+    3. The system display a button to view the goal.
+    4. The user click on button.
+    5. The system show the datas about goal with the button to create a new goal.
+    6. The user clicks the button
+    7. The system open a modal to write the new goal data with the close button.
+    8. The user click on button.
+    9. The system close the modal.
+## UC13 - View profile
+### Actor
+- User
+### MF
+    1. The user login in the website.
+    2. The user be redirected to the main page.
+    3. The system display a button to view the user profile.
+    4. The user click on button.
+    5. The system show the user datas
+## UC14 - Edit profile
+### Actor
+- User
+### MF
+    1. The user login in the website.
+    2. The user be redirected to the main page.
+    3. The system display a button to view the user profile.
+    4. The user click on button.
+    5. The system show the user datas with a button to update.
+    6. The user click button.
+    7. Rewrite data is enabled.
+    8. The edit button transform in a submit button.
+    9. The user rewrite they data.
+    10. The user rewrite they data.
+    11. The user click on the submit button.
+    12. The system validate the data.
+    13. The system return the sucess message.
+### AF1-Invalid data
+    1. The user login in the website.
+    2. The user be redirected to the main page.
+    3. The system display a button to view the user profile.
+    4. The user click on button.
+    5. The system show the user datas with a button to update.
+    6. The user click button.
+    7. Rewrite data is enabled.
+    8. The edit button transform in a submit button.
+    9. The user rewrite they data.
+    10. The user rewrite they data.
+    11. The user click on the submit button.
+    12. The system validate the data.
+    13. The system return the invalid data message if the data is invalid.
