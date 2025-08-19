@@ -1,4 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import "@fontsource/inter/variable.css";
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+
+input[type="password"]::-webkit-credentials-auto-fill-button,
+input[type="password"]::-webkit-clear-button,
+input[type="password"]::-webkit-inner-spin-button,
+input[type="password"]::-webkit-outer-spin-button {
+  display: none;
+  -webkit-appearance: none;
+}
+* {
+  box-sizing: border-box;
+}
+
+.text-400{
+    font-weight: 400;
+}
+.text-600{
+    font-weight: 600;
+}
+.text-800{
+    font-weight: 800;
+}
+.text-500{
+    font-weight: 500;
+}
+.font-inter{
+    font-family: "Inter";
+}
+.font-poppins{
+    font-family: "Poppins";
+}
