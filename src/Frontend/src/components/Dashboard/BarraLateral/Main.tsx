@@ -1,8 +1,14 @@
+import ListItem from "./listItem"
+import OverviewImage from "../../../assets/Overview.svg"
+import BalanceImage from "../../../assets/Balances.svg"
+import TrasactionsImage from "../../../assets/Transactions.svg"
+import BillsImage from "../../../assets/Bills.svg"
+import ExpensesImage from "../../../assets/Expenses.svg"
+import GoalsImage from "../../../assets/Goals.svg"
+import SetingsImage from "../../../assets/Setings.svg"
 type User = {
     
-
 }
-
 export default function Main({}: User,page:string="Overview") {
   return (
     <div className="flex  flex-col w-[280px] h-screen bg-[#191919] items-center py-[48px] px-[28px]" >
@@ -11,18 +17,15 @@ export default function Main({}: User,page:string="Overview") {
         <span className="text-500">bank</span>
         .IO
       </span>
-      <div className="px-[16px] text-[#FFFFFFB2] flex flex-col w-[224px] h-[432px] text-500 font-inter text-[16px] list-none">
-        <div className="w-full p-0 flex items-center" id="Overview">
-          <svg  className="me-[12px]" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="overview symbol">
-            <path d="M21 14H14V21H21V14Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M10 14H3V21H10V14Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M21 3H14V10H21V3Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M10 3H3V10H10V3Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span>
-            Overview
-          </span>
-        </div>
+      <div className="px-[16px] gap-[16px] flex flex-col w-[224px] h-[432px] text-500 font-inter text-[16px] list-none">
+        <ListItem Image={OverviewImage} text="Overview" activate={true} />
+        <ListItem Image={BalanceImage} text="Balances" activate={false} />
+        <ListItem Image={TrasactionsImage} text="Transactions" activate={false} />
+        <ListItem Image={BillsImage} text="Bills" activate={false} />
+        <ListItem Image={ExpensesImage} text="Expenses" activate={false} />
+        <ListItem Image={GoalsImage} text="Goals" activate={false} />
+        <ListItem Image={SetingsImage} text="Settings" activate={false} />
+        
       </div>
     </div>
   )
