@@ -28,7 +28,7 @@ export default function App() {
                     </p>
                 </div>
                 <GoogleButon label="Google Login Button" name="GoogleLoginButton"/>
-                <CreateAcount text="Create an account" link="Create an acount"/>
+                <CreateAcount text="Login" link=""/>
                 </div>
         </div>
 

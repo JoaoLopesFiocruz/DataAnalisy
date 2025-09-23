@@ -10,3 +10,6 @@
 2. Now you need to install dependencies with comand `npm i`  
 3. Runing the comand `npm run dev`, the server will start. and any change will reload the
 ## Routes
+API:
+https://api.saberespopulares.fiocruz.br/api/core/communities
+https://api.saberespopulares.fiocruz.br/api/core/collections
