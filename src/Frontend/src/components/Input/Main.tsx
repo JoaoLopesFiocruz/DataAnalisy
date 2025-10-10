@@ -9,7 +9,7 @@ interface MainProps{
 export default function Main({value,type,placeholder,name,icon}: MainProps) {
     const [texto, setValue] = useState(value);
   return (
-    <div className="flex relative text-[#F4EDE8]">
+    <div className="my-[8px] flex relative text-[#F4EDE8]">
       <input 
       type={type} 
       placeholder={`${placeholder}`} 

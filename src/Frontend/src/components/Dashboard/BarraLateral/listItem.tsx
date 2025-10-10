@@ -19,7 +19,7 @@ export default function Main({ Image, activate,text,link=null }: item) {
     return (
       <div className="w-full px-[16px] py-[12px] flex items-center bg-[#299D91] rounded-[4px] text-600 text-[#fff]">
         <img src={Image} alt="" className="me-[12px]" />
-        <span>{text}</span>
+        <div className="text-[#FFFFFF]">{text}</div>
       </div>
     );
   }
