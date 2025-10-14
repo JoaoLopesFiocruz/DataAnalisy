@@ -1,15 +1,41 @@
 import Nav from "../components/Dashboard/BarraLateral/Main"
 import Input from "../components/Input/Main"
 import Button from "../components/Button/Confirmform"
-import { useState } from "react"
+import { useState } from "react";
+import { useEffect } from 'react';
+
 export default function App() {
     const [photo, setPhoto] = useState(false);
+    const [foto, setFoto] = useState(null);
+    const enviarFoto = (arquivo) => {
+        if (!arquivo || !arquivo.type.startsWith("image/")) {
+            alert("Por favor, selecione uma imagem válida.");
+            return;
+        }
+        const reader = new FileReader();
+        reader.onloadend = () => {
+        const base64 = reader.result;
+        setFoto(base64)
+        };
+
+        reader.readAsDataURL(arquivo); // <- Converte para base64
+    };
+    const handleChange = async (e) => {
+        const arquivo = e.target.files[0];
+        setFoto(arquivo);
+        await enviarFoto(arquivo); // envia assim que seleciona
+        setPhoto(false)
+        console.log(foto)
+    };
     return (
+        
         <div className="flex bg-[#333] w-full">
             <Nav page={0}/>
             <form action="" className="relative flex flex-1 flex-col items-center justify-center">
                 <div className="flex relative">
-                    <i class="fa-solid fa-circle-user text-[200px] mb-[60px]"></i>
+                    {
+                    foto?<img src={foto} alt="" className="mb-[60px] me-[30px] w-[200px] h-[200px] rounded-full object-cover" />
+                    : <i class="fa-solid fa-circle-user text-[200px] mb-[60px]"></i> }
                     <i className="absolute fa-solid fa-pencil bottom-[60px] right-[20px] bg-[#FFA000] p-[10px] text-[20px] rounded-full hover:cursor-pointer hover:bg-[#ee9700]" onClick={()=>{setPhoto(!photo)}}></i>
                 </div>
                 <Input
@@ -47,7 +73,7 @@ export default function App() {
                                 <p class="text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
                             </div>
-                            <input id="dropzone-file" type="file" class="hidden" />
+                            <input id="dropzone-file" type="file" class="hidden" accept="image/*" onChange={handleChange}/>
                         </label>
                     </div> 
                 : ""}
@@ -55,3 +81,4 @@ export default function App() {
         </div>
     )
 }
+
