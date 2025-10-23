@@ -4,11 +4,11 @@ const { Pool } = require('pg');
 // Configuração do banco de dados PostgreSQL
 // Utiliza variáveis de ambiente do arquivo .env
 const pool = new Pool({
-  user: process.env.USER,
-  host: process.env.HOST,
+  user: process.env.DATABASEUSER,
+  host: process.env.DATABASEHOST,
   database: process.env.DATABASENAME,
-  password: process.env.PASSWORD,
-  port: process.env.PORT
+  password: process.env.DATABASEPASSWORD,
+  port: Number(process.env.DATABASEPORT)
 });
 
 // Teste de conexão

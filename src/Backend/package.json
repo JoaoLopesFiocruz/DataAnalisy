@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "ts":"npx tsc",
+    "dev":"npx nodemon"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
@@ -17,6 +19,8 @@
     "pg": "^8.16.3"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/express": "^5.0.3",
     "@types/node": "^24.9.1",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
