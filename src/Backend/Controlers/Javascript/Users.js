@@ -7,7 +7,7 @@ var bcrypt = require("bcryptjs");
 class Pessoa {
     static async GET() {
         try {
-            const result = await pool.query('SELECT * FROM public.users LIMIT 100');
+            const result = await pool.query('SELECT * FROM "public"."Users" LIMIT 100');
             return result.rows;
         }
         catch (e) {
@@ -21,6 +21,7 @@ class Pessoa {
     }
     static async GetRouter(req, res) {
         try {
+            console.log(Pessoa.GET());
             const result = await Pessoa.GET();
             return res.status(200).json({
                 "status": 200,
@@ -43,4 +44,7 @@ class Pessoa {
             });
         }
     }
+    
 }
+module.exports = Pessoa;
+//# sourceMappingURL=Users.js.map
