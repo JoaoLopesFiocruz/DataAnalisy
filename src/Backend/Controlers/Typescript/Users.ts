@@ -2,23 +2,23 @@ import type { Request, Response } from 'express';
 var pool =require("../../DB/Config");
 var bcrypt =require("bcryptjs");
 interface User {
-    Senha: string|null;
-    Updatedate: Date|null;
-    Createdate: Date|null;
-    Name:string|null;
-    Email:string|null;
-    id:number|null;
+    Senha?: string;
+    Updatedate?: Date;
+    Createdate?: Date;
+    Name?:string;
+    Email?:string;
+    id?:number;
 }
 interface MethodResponse {
     Message:string,
-    Data:User[]|null,
+    Data?:User[],
     Status:Number,
     Sucess:boolean
 }
-class Pessoa {
+class User {
     private static async Search(Col:string,Value:any):Promise<MethodResponse>{
         try{
-            const query=await pool.query('RETURN * FROM "public"."Users" WHERE $1 = $2',[Col,Value])
+            const query=await pool.query('SELECT * FROM "public"."users" WHERE $1 = $2',[Col,Value])
             //query.rows:User[]
             if(query.rows){
                 return {
@@ -31,14 +31,13 @@ class Pessoa {
             else{
                 return {
                     Message:"Register not found",
-                    Data:null,
                     Status:404,
                     Sucess:false
                 }
             }
         }
         catch(e){
-            return await Pessoa.error(e)
+            return await User.error(e)
         }
     }
     private static async error(e:any):Promise<MethodResponse>{
@@ -65,13 +64,13 @@ class Pessoa {
             }
         }
         catch(e){   
-            return await Pessoa.error(e)
+            return await User.error(e)
         }
     }
     public static async GetRouter(req: Request, res: Response):Promise<Response>{
         try{
-            console.log(Pessoa.GET())
-            const result=await Pessoa.GET()
+            console.log(User.GET())
+            const result=await User.GET()
             if(result.Sucess){
                 return res.status(200).json(
                     {
@@ -95,7 +94,7 @@ class Pessoa {
         }
         catch(e){
             return res.status(501).json(
-                await Pessoa.error(e)
+                await User.error(e)
             )
         }
 
@@ -105,13 +104,12 @@ class Pessoa {
             await pool.query(`INSERT INTO "Users" ("Name", "Senha", "Email") VALUES ($1, $2, $3)`,[Data.Name,Data.Senha,Data.Email])
             return {
                 Message:"Crete suceffully",
-                Data:null,
                 Status:200,
                 Sucess:true
             }
         }
         catch(e){   
-            return await Pessoa.error(e)
+            return await User.error(e)
         }
     }
     public static async CreateRouter(req: Request, res: Response):Promise<Response>{
@@ -125,13 +123,42 @@ class Pessoa {
                     Sucess:false
                 })
             }
-            
+            const resultado=await User.Search("email",Email)
+            if (resultado.Sucess){
+                return res.status(400).json({
+                    Message:"Email already logged",
+                    Status:400,
+                    Sucess:false
+                })
+            }
+            else if(resultado.Status=501){
+                throw new Error("Erro no banco de dados")
+            }
+            else{
+                const hash = await bcrypt.hash(Senha, 12);
+                const creation=await User.Create({
+                    Senha: hash,
+                    Name:Name,
+                    Email:Email
+                })
+                if(creation.Status){
+                    return res.status(200).json({
+                        Message:"Create suceffuly",
+                        Status:200,
+                        Sucess:true
+                    })
+                }
+                else{
+                    throw new Error("Error in the database")
+                }
+            }
         }
         catch(e){
             return res.status(501).json(
-                await Pessoa.error(e)
+                await User.error(e)
             )
         }
+        
     }
 }
-module.exports=Pessoa
+module.exports=User
