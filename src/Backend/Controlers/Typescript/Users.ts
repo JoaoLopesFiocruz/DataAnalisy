@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express';
+import response = require('express');
 var pool =require("../../DB/Config");
 var bcrypt =require("bcryptjs");
 interface User {
@@ -159,6 +160,41 @@ class User {
             )
         }
         
+    }
+    public static async GetByID(req: Request, res: Response):Promise<Response>{
+        try{
+            const {id}= req.body
+            const response= await User.Search("id",id)
+            if(response.Status==200){
+                return res.json(
+                    {
+                            Message:"Consulta Realizada com Seucesso",
+                            Data:response.Data,
+                            Status:200,
+                            Sucess:true
+                    }
+                )
+            }
+            else{
+                return res.json(
+                    {
+                        Message:"usuário não encontrado",
+                        Status:404,
+                        Sucess:false
+                    }
+                )
+            }
+        }
+        catch(e){
+            console.error(e)
+            return res.json(
+                {
+                    Message:"Erro interno",
+                    Status:500,
+                    Sucess:false
+                }
+            )
+        }
     }
 }
 module.exports=User

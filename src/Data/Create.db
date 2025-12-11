@@ -1,0 +1,18 @@
+DROP TABLE IF EXISTS public.users;
+CREATE TABLE public.users
+(
+    id serial NOT NULL,
+    "Updatedate" TIMESTAMP DEFAULT NOW() NOT NULL,
+    "Createdate" TIMESTAMP DEFAULT NOW() NOT NULL,
+    "Name" "char" NOT NULL,
+    "Email" "char",
+    "Senha" "char" NOT NULL,
+    PRIMARY KEY (id, "Senha")
+);
+
+ALTER TABLE IF EXISTS public.users
+    OWNER to postgres;
+
+COMMENT ON TABLE public.users
+    IS 'Tabela para gerenciamento dos usuários';
+
