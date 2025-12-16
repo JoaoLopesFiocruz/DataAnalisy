@@ -38,7 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var express = require('express');
 var router = express.Router();
-var pool = require("../../DB/Config");
+var pool = require("../../../DB/Config");
 var bcrypt = require("bcryptjs");
 var Pessoa = /** @class */ (function () {
     function Pessoa() {

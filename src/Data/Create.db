@@ -1,18 +1,18 @@
-DROP TABLE IF EXISTS public.users;
-CREATE TABLE public.users
-(
+DROP TABLE IF EXISTS public."Users";
+CREATE TABLE
+  public."Users" (
     id serial NOT NULL,
-    "Updatedate" TIMESTAMP DEFAULT NOW() NOT NULL,
-    "Createdate" TIMESTAMP DEFAULT NOW() NOT NULL,
-    "Name" "char" NOT NULL,
-    "Email" "char",
-    "Senha" "char" NOT NULL,
-    PRIMARY KEY (id, "Senha")
-);
+    "Updatedate" timestamp without time zone NOT NULL DEFAULT now(),
+    "Createdate" timestamp without time zone NOT NULL DEFAULT now(),
+    "Name" character varying(255) NOT NULL,
+    "Email" character varying(255) NULL,
+    "Password" character varying(255) NOT NULL
+  );
 
-ALTER TABLE IF EXISTS public.users
-    OWNER to postgres;
+ALTER TABLE
+  public."Users"
+ADD
+  CONSTRAINT "Users_pkey" PRIMARY KEY (Password, id)
 
 COMMENT ON TABLE public.users
     IS 'Tabela para gerenciamento dos usuários';
-

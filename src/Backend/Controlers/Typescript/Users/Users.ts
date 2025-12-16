@@ -1,14 +1,17 @@
 import type { Request, Response } from 'express';
 import response = require('express');
-var pool =require("../../DB/Config");
+var pool =require("../../../DB/Config");
 var bcrypt =require("bcryptjs");
 interface User {
-    Senha?: string;
+    Password?: string;
     Updatedate?: Date;
     Createdate?: Date;
     Name?:string;
     Email?:string;
     id?:number;
+}
+function isOnlyDigits(value: string): boolean {
+  return /^\d+$/.test(value);
 }
 interface MethodResponse {
     Message:string,
@@ -16,12 +19,12 @@ interface MethodResponse {
     Status:Number,
     Sucess:boolean
 }
-class User {
+class User {   
     private static async Search(Col:string,Value:any):Promise<MethodResponse>{
         try{
-            const query=await pool.query('SELECT * FROM "public"."users" WHERE $1 = $2',[Col,Value])
+            const query=await pool.query(`SELECT * FROM "public"."Users" WHERE ${Col} = $1;`,[Value])
             //query.rows:User[]
-            if(query.rows){
+            if(query.rows.length){
                 return {
                     Message:"Register found",
                     Data:query.rows,
@@ -33,7 +36,7 @@ class User {
                 return {
                     Message:"Register not found",
                     Status:404,
-                    Sucess:false
+                    Sucess:true
                 }
             }
         }
@@ -102,7 +105,7 @@ class User {
     }
     private static async Create(Data:User):Promise<MethodResponse>{
         try{
-            await pool.query(`INSERT INTO "Users" ("Name", "Senha", "Email") VALUES ($1, $2, $3)`,[Data.Name,Data.Senha,Data.Email])
+            await pool.query(`INSERT INTO "Users" ("Name", "Password", "Email") VALUES ($1, $2, $3)`,[Data.Name,Data.Password,Data.Email])
             return {
                 Message:"Crete suceffully",
                 Status:200,
@@ -116,8 +119,8 @@ class User {
     public static async CreateRouter(req: Request, res: Response):Promise<Response>{
         try{
             //req.body:User
-            const {Senha,Name,Email}=req.body
-            if(!Senha||!Name||!Email){
+            const {Password,Name,Email}=req.body
+            if(!Password||!Name||!Email){
                 return res.status(400).json({                    
                     Message:"Parameters null",
                     Status:400,
@@ -125,7 +128,7 @@ class User {
                 })
             }
             const resultado=await User.Search("email",Email)
-            if (resultado.Sucess){
+            if (resultado.Status==200){
                 return res.status(400).json({
                     Message:"Email already logged",
                     Status:400,
@@ -133,12 +136,12 @@ class User {
                 })
             }
             else if(resultado.Status=501){
-                throw new Error("Erro no banco de dados")
+                throw new Error("Error in the database")
             }
             else{
-                const hash = await bcrypt.hash(Senha, 12);
+                const hash = await bcrypt.hash(Password, 12);
                 const creation=await User.Create({
-                    Senha: hash,
+                    Password: hash,
                     Name:Name,
                     Email:Email
                 })
@@ -163,19 +166,31 @@ class User {
     }
     public static async GetByID(req: Request, res: Response):Promise<Response>{
         try{
-            const {id}= req.body
+            const {id}= req.params
             const response= await User.Search("id",id)
-            if(response.Status==200){
-                return res.json(
-                    {
-                            Message:"Consulta Realizada com Seucesso",
+            if(response.Sucess){
+                if(response.Status==404){
+                    return res.status(404).json(
+                        {
+                            Message:"Usuário não encontrado",
+                            Status:404,
+                            Sucess:true
+                        }
+                    )
+                }
+                else{
+                    return res.status(200).json(
+                        {
+                            Message:"Consulta Realizada com Sucesso",
                             Data:response.Data,
                             Status:200,
                             Sucess:true
-                    }
-                )
+                        }
+                    )   
+                }
             }
             else{
+                console.log(response)
                 return res.json(
                     {
                         Message:"usuário não encontrado",
@@ -188,6 +203,68 @@ class User {
         catch(e){
             console.error(e)
             return res.json(
+                {
+                    Message:"Erro interno",
+                    Status:500,
+                    Sucess:false
+                }
+            )
+        }
+    }
+    private static async Update(id:Number|string,User:User):Promise<MethodResponse>{
+        let response:MethodResponse=await this.Search("id",id)
+        if(response.Status==404){
+            return {
+                Message:"id not found",
+                Status:404,
+                Sucess:false
+            }
+        }
+        else if(response?.Data?.[0]){
+            if(!User.Name){
+                User.Name = response.Data[0].Name!;
+            }
+            if(!User.Email){
+                User.Email = response.Data[0].Email!;
+            }
+            if (response.Data[0].Createdate) {
+                User.Createdate=response.Data[0].Createdate
+            }
+        }
+        const result = await pool.query(
+            'UPDATE "Users" SET "Name" = $1,"Email"=$2, "Createdate"=$3 WHERE id = $4 RETURNING "Name"',
+            [User.Name,User.Email,User.Createdate, id]
+        );
+        return {
+            Message:`Update Suceffully ${result.rows[0].Name}`,
+            Status:200,
+            Sucess:true
+        }
+    }
+    public static async UpdateRouter(req: Request, res: Response):Promise<Response>{
+        try{
+            const {id}= req.params
+            const {user}=req.body
+            if(!user||!id){
+                return res.status(400).json({
+                    Message:"Parameters null",
+                    Status:400,
+                    Sucess:false
+                })
+            }
+            if(typeof(id)!=="number"&&!isOnlyDigits(id)){
+                return res.status(400).json({
+                    Message:"Id not numeric",
+                    Status:400,
+                    Sucess:false
+                })
+            }
+            let Retorno=await User.Update(id,user)
+            return res.status(400).json(Retorno)
+        }
+        catch(e){
+            console.error(e)
+            return res.status(501).json(
                 {
                     Message:"Erro interno",
                     Status:500,
