@@ -7,30 +7,6 @@ function isOnlyDigits(value) {
     return /^\d+$/.test(value);
 }
 class User {
-    static async Search(Col, Value) {
-        try {
-            const query = await pool.query(`SELECT * FROM "public"."Users" WHERE ${Col} = $1;`, [Value]);
-            //query.rows:User[]
-            if (query.rows.length) {
-                return {
-                    Message: "Register found",
-                    Data: query.rows,
-                    Status: 200,
-                    Sucess: true
-                };
-            }
-            else {
-                return {
-                    Message: "Register not found",
-                    Status: 404,
-                    Sucess: true
-                };
-            }
-        }
-        catch (e) {
-            return await User.error(e);
-        }
-    }
     static async error(e) {
         if (e instanceof Error) {
             console.error('Database query error:', e.message);
@@ -47,7 +23,7 @@ class User {
     }
     static async GET() {
         try {
-            const result = await pool.query('SELECT * FROM "public"."Users" LIMIT 100');
+            const result = await pool.query('SELECT id,"Name","Email" FROM "public"."Users" LIMIT 100');
             return {
                 Message: "query suceffuly",
                 Data: result.rows,
@@ -108,16 +84,13 @@ class User {
                     Sucess: false
                 });
             }
-            const resultado = await User.Search("email", Email);
-            if (resultado.Status == 200) {
+            const response = await pool.query(`SELECT id FROM "public"."Users" WHERE Email = $1;`, [Email]);
+            if (response.rows.length) {
                 return res.status(400).json({
                     Message: "Email already logged",
                     Status: 400,
                     Sucess: false
                 });
-            }
-            else if (resultado.Status = 501) {
-                throw new Error("Error in the database");
             }
             else {
                 const hash = await bcrypt.hash(Password, 12);
@@ -145,23 +118,14 @@ class User {
     static async GetByID(req, res) {
         try {
             const { id } = req.params;
-            const response = await User.Search("id", id);
-            if (response.Sucess) {
-                if (response.Status == 404) {
-                    return res.status(404).json({
-                        Message: "Usuário não encontrado",
-                        Status: 404,
-                        Sucess: true
-                    });
-                }
-                else {
-                    return res.status(200).json({
-                        Message: "Consulta Realizada com Sucesso",
-                        Data: response.Data,
-                        Status: 200,
-                        Sucess: true
-                    });
-                }
+            const response = await pool.query(`SELECT id,"Name","Email" FROM "public"."Users" WHERE id = $1;`, [id]);
+            if (response.rows.length) {
+                return res.status(200).json({
+                    Message: "Consulta Realizada com Sucesso",
+                    Data: response.rows,
+                    Status: 200,
+                    Sucess: true
+                });
             }
             else {
                 console.log(response);
@@ -182,23 +146,24 @@ class User {
         }
     }
     static async Update(id, User) {
-        let response = await this.Search("id", id);
-        if (response.Status == 404) {
+        let response = await pool.query(`SELECT "Name","Email","Createdate" FROM "public"."Users" WHERE id = $1;`[id]);
+        if (!response.rows.length) {
             return {
                 Message: "id not found",
                 Status: 404,
                 Sucess: false
             };
         }
-        else if (response?.Data?.[0]) {
+        else if (response.rows?.[0]) {
             if (!User.Name) {
-                User.Name = response.Data[0].Name;
+                '';
+                User.Name = response.rows[0].Name;
             }
             if (!User.Email) {
-                User.Email = response.Data[0].Email;
+                User.Email = response.rows[0].Email;
             }
-            if (response.Data[0].Createdate) {
-                User.Createdate = response.Data[0].Createdate;
+            if (response.rows[0].Createdate) {
+                User.Createdate = response.rows[0].Createdate;
             }
         }
         const result = await pool.query('UPDATE "Users" SET "Name" = $1,"Email"=$2, "Createdate"=$3 WHERE id = $4 RETURNING "Name"', [User.Name, User.Email, User.Createdate, id]);
@@ -211,7 +176,7 @@ class User {
     static async UpdateRouter(req, res) {
         try {
             const { id } = req.params;
-            const { user } = req.body;
+            const user = req.body;
             if (!user || !id) {
                 return res.status(400).json({
                     Message: "Parameters null",
@@ -219,7 +184,7 @@ class User {
                     Sucess: false
                 });
             }
-            if (typeof (id) !== "number" && !isOnlyDigits(id)) {
+            if (typeof (id) !== "number") {
                 return res.status(400).json({
                     Message: "Id not numeric",
                     Status: 400,
