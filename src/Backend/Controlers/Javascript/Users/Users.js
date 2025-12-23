@@ -79,17 +79,17 @@ class User {
             const { Password, Name, Email } = req.body;
             if (!Password || !Name || !Email) {
                 return res.status(400).json({
-                    Message: "Parameters null",
-                    Status: 400,
-                    Sucess: false
+                    "Message": "Parameters null",
+                    "Status": 400,
+                    "Sucess": false
                 });
             }
-            const response = await pool.query(`SELECT id FROM "public"."Users" WHERE Email = $1;`, [Email]);
+            const response = await pool.query(`SELECT id FROM "public"."Users" WHERE "Email" = $1;`, [Email]);
             if (response.rows.length) {
                 return res.status(400).json({
-                    Message: "Email already logged",
-                    Status: 400,
-                    Sucess: false
+                    "Message": "Email already logged",
+                    "Status": 400,
+                    "Sucess": false
                 });
             }
             else {
@@ -146,11 +146,19 @@ class User {
         }
     }
     static async Update(id, User) {
-        let response = await pool.query(`SELECT "Name","Email","Createdate" FROM "public"."Users" WHERE id = $1;`[id]);
+        let response = await pool.query(`SELECT "Password","Name","Email","Createdate" FROM "public"."Users" WHERE id = $1;`, [id]);
         if (!response.rows.length) {
             return {
                 Message: "id not found",
                 Status: 404,
+                Sucess: false
+            };
+        }
+        const passwordMatch = await bcrypt.compare(User.Password, response.rows[0].Password);
+        if (!passwordMatch) {
+            return {
+                Message: `Password Incorrect`,
+                Status: 401,
                 Sucess: false
             };
         }
@@ -177,34 +185,55 @@ class User {
         try {
             const { id } = req.params;
             const user = req.body;
-            if (!user || !id) {
+            if (!user || !id || !user.Password) {
+                console.log(user, id);
                 return res.status(400).json({
                     Message: "Parameters null",
                     Status: 400,
                     Sucess: false
                 });
             }
-            else if (typeof (id) !== "number") {
+            else if (isNaN(Number(id))) {
                 return res.status(400).json({
                     Message: "Id not numeric",
                     Status: 400,
                     Sucess: false
                 });
             }
-            let Retorno = await User.Update(id, user);
-            return res.status(400).json(Retorno);
+            let Retorno = await User.Update(parseInt(id, 10), user);
+            if (!Retorno.Sucess) {
+                if (Retorno.Status == 401) {
+                    return res.status(401).json({
+                        Message: "Password Incorrect",
+                        Status: 401,
+                        Sucess: false
+                    });
+                }
+                else if (Retorno.Status == 404) {
+                    return res.status(404).json({
+                        Message: "User not found",
+                        Status: 404,
+                        Sucess: false
+                    });
+                }
+            }
+            return res.status(200).json({
+                Message: Retorno.Message,
+                Status: 200,
+                Sucess: true
+            });
         }
         catch (e) {
             console.error(e);
             return res.status(501).json({
                 Message: "Erro interno",
-                Status: 500,
+                Status: 501,
                 Sucess: false
             });
         }
     }
-    static async Delete(id) {
-        let response = await pool.query(`SELECT id FROM "public"."Users" WHERE id = $1;`, [id]);
+    static async Delete(id, Password) {
+        let response = await pool.query(`SELECT "Password" FROM "public"."Users" WHERE id = $1;`, [id]);
         if (!response.rows.length) {
             return {
                 Message: "User not found",
@@ -213,6 +242,14 @@ class User {
             };
         }
         try {
+            const passwordMatch = await bcrypt.compare(Password, response.rows[0].Password);
+            if (!passwordMatch) {
+                return {
+                    Message: "Password Incorrect",
+                    Status: 401,
+                    Sucess: false
+                };
+            }
             response = await pool.query(`DELETE FROM public."Users" WHERE id = $1;`, [id]);
             return {
                 Message: "Delete Successfully",
@@ -226,6 +263,7 @@ class User {
     }
     static async DeleteRouter(req, res) {
         const { id } = req.params;
+        const { Password } = req.body;
         if (!id) {
             return res.status(400).json({
                 Message: "Parameters null",
@@ -240,10 +278,10 @@ class User {
                 Sucess: false
             });
         }
-        let response = await User.Delete(parseInt(id, 10));
+        let response = await User.Delete(parseInt(id, 10), Password);
         if (!response.Sucess) {
             if (response.Status == 404) {
-                return res.status(400).json({
+                return res.status(404).json({
                     Message: "User not found",
                     Status: 404,
                     Sucess: false
@@ -252,7 +290,14 @@ class User {
             else if (response.Status == 501) {
                 return res.status(501).json({
                     Message: "Internal error in database",
-                    Status: 404,
+                    Status: 501,
+                    Sucess: false
+                });
+            }
+            else if (response.Status == 401) {
+                return res.status(401).json({
+                    Message: "Password Incorrect",
+                    Status: 401,
                     Sucess: false
                 });
             }
