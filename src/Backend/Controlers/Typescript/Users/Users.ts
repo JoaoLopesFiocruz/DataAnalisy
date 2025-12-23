@@ -242,8 +242,11 @@ class User {
         }
     }
     public static async Delete(id:number):Promise<MethodResponse>{
-        let response=await pool.query(`SELECT id FROM "public"."Users" WHERE id = $1;`[id]);
-        if(!response.row){
+        let response = await pool.query(
+            `SELECT id FROM "public"."Users" WHERE id = $1;`,
+            [id]
+        );        
+        if(!response.rows.length){
             return {
                 Message:"User not found",
                 Status:404,
@@ -251,7 +254,7 @@ class User {
             }
         }
         try{
-            response=await pool.query(`DELETE FROM public."User" WHERE id = $1;`[id]);
+            response=await pool.query(`DELETE FROM public."Users" WHERE id = $1;`,[id]);
             return {
                 Message:"Delete Successfully",
                 Sucess:true,
@@ -262,7 +265,7 @@ class User {
             return await User.error(e)
         }
     }
-    public static async deleteRoute(req: Request, res: Response):Promise<Response>{
+    public static async DeleteRouter(req: Request, res: Response):Promise<Response>{
         const {id}= req.params
         if(!id){
             return res.status(400).json({
@@ -271,14 +274,15 @@ class User {
                 Sucess:false
             })
         }
-        else if(typeof(id)!=="number"){
+        
+        else if(isNaN(Number(id))){
             return res.status(400).json({
                 Message:"Id not numeric",
                 Status:400,
                 Sucess:false
             })
         }
-        let response=await User.Delete(id)
+        let response=await User.Delete(parseInt(id, 10))
         if(!response.Sucess){
             if(response.Status==404){
                 return res.status(400).json({
