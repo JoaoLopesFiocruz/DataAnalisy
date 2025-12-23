@@ -241,5 +241,30 @@ class User {
             )
         }
     }
+    public static async delete(id:number):Promise<MethodResponse>{
+        let response=await pool.query(`SELECT id FROM "public"."Users" WHERE id = $1;`[id]);
+        if(!response.row){
+            return {
+                Message:"User not founded",
+                Status:404,
+                Sucess:false
+            }
+        }
+        try{
+            response=await pool.query(`DELETE FROM public."User" WHERE id = $1;`[id]);
+            return {
+                Message:"Delete Suceffully",
+                Sucess:true,
+                Status:200
+            }
+        }
+        catch(e){
+            return await User.error(e)
+        }
+    }
+    public static async deleteRoute(req: Request, res: Response):Promise<Response>{
+        
+    }
 }
+
 module.exports=User
