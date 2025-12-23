@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const response = require("express");
 var pool = require("../../../DB/Config");
 var bcrypt = require("bcryptjs");
+const jwt = require('jsonwebtoken');
 function isOnlyDigits(value) {
     return /^\d+$/.test(value);
 }
@@ -44,7 +45,7 @@ class User {
                     "status": 200,
                     "sucess": true,
                     "data": result,
-                    "message": "Get sucefully"
+                    "message": "Get Successfully"
                 });
             }
             else {
@@ -101,7 +102,7 @@ class User {
                 });
                 if (creation.Status) {
                     return res.status(200).json({
-                        Message: "Create suceffuly",
+                        Message: "Create Successfully",
                         Status: 200,
                         Sucess: true
                     });
@@ -121,7 +122,7 @@ class User {
             const response = await pool.query(`SELECT id,"Name","Email" FROM "public"."Users" WHERE id = $1;`, [id]);
             if (response.rows.length) {
                 return res.status(200).json({
-                    Message: "Consulta Realizada com Sucesso",
+                    Message: "Query Successfully",
                     Data: response.rows,
                     Status: 200,
                     Sucess: true
@@ -176,7 +177,7 @@ class User {
         }
         const result = await pool.query('UPDATE "Users" SET "Name" = $1,"Email"=$2, "Createdate"=$3 WHERE id = $4 RETURNING "Name"', [User.Name, User.Email, User.Createdate, id]);
         return {
-            Message: `Update Suceffully ${result.rows[0].Name}`,
+            Message: `Update Successfully ${result.rows[0].Name}`,
             Status: 200,
             Sucess: true
         };
@@ -304,6 +305,41 @@ class User {
         }
         return res.status(200).json({
             Message: "Deleted Successfully",
+            Status: 200,
+            Sucess: true
+        });
+    }
+    static generateToken(user) {
+        const token = jwt.sign({
+            id: user.id,
+            Email: user.Email,
+            Generated: new Date()
+        }, process.env.JWT_SECRET, { expiresIn: '2h' });
+        return token;
+    }
+    static async Login(req, res) {
+        const { Email, Password } = req.body;
+        console.log("legal");
+        let response = await pool.query(`SELECT "Password",id,"Email" FROM "public"."Users" WHERE "Email" = $1;`, [Email]);
+        if (!response.rows.length) {
+            return res.status(404).json({
+                Message: "Email not founded",
+                Status: 404,
+                Sucess: false
+            });
+        }
+        let comparation = bcrypt.compare(Password, response.rows[0].Password);
+        if (!comparation) {
+            return res.status(401).json({
+                Message: "Password incorrect",
+                Status: 401,
+                Sucess: false
+            });
+        }
+        let token = User.generateToken(response.rows[0]);
+        return res.status(200).json({
+            Message: "Login Successfully",
+            Data: token,
             Status: 200,
             Sucess: true
         });

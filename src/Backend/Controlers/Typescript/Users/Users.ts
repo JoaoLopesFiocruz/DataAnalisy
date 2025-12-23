@@ -2,6 +2,7 @@ import type { Request, Response } from 'express';
 import response = require('express');
 var pool =require("../../../DB/Config");
 var bcrypt =require("bcryptjs");
+const jwt = require('jsonwebtoken');
 interface User {
     Password?: string;
     Updatedate?: Date;
@@ -57,7 +58,7 @@ class User {
                         "status":200,
                         "sucess":true,
                         "data":result,
-                        "message":"Get sucefully"
+                        "message":"Get Successfully"
                     }
                 )
             }
@@ -122,7 +123,7 @@ class User {
                 })
                 if(creation.Status){
                     return res.status(200).json({
-                        Message:"Create suceffuly",
+                        Message:"Create Successfully",
                         Status:200,
                         Sucess:true
                     })
@@ -149,7 +150,7 @@ class User {
             if(response.rows.length){
                 return res.status(200).json(
                     {
-                        Message:"Consulta Realizada com Sucesso",
+                        Message:"Query Successfully",
                         Data:response.rows,
                         Status:200,
                         Sucess:true
@@ -212,7 +213,7 @@ class User {
         );
         
         return {
-            Message:`Update Suceffully ${result.rows[0].Name}`,
+            Message:`Update Successfully ${result.rows[0].Name}`,
             Status:200,
             Sucess:true
         }
@@ -348,6 +349,45 @@ class User {
         return res.status(200).json({
             
             Message:"Deleted Successfully",
+            Status:200,
+            Sucess:true
+        })
+    }
+    private static generateToken(user:User):string{
+        const token = jwt.sign(
+        {
+            id: user.id,
+            Email: user.Email,
+            Generated:new Date()
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: '2h' } 
+      );
+      return token
+    }
+    public static async Login(req: Request, res: Response):Promise<Response>{
+        const {Email,Password}=req.body
+        console.log("legal")
+        let response=await pool.query(`SELECT "Password",id,"Email" FROM "public"."Users" WHERE "Email" = $1;`,[Email]);
+        if(!response.rows.length){
+            return res.status(404).json({
+                Message:"Email not founded",
+                Status:404,
+                Sucess:false
+            })
+        }
+        let comparation=bcrypt.compare(Password, response.rows[0].Password)
+        if(!comparation){
+            return res.status(401).json({
+                Message:"Password incorrect",
+                Status:401,
+                Sucess:false
+            })   
+        }
+        let token=User.generateToken(response.rows[0])
+        return res.status(200).json({
+            Message:"Login Successfully",
+            Data:token,
             Status:200,
             Sucess:true
         })
