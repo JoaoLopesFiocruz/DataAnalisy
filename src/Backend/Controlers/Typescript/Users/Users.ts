@@ -220,7 +220,7 @@ class User {
                     Sucess:false
                 })
             }
-            if(typeof(id)!=="number"){
+            else if(typeof(id)!=="number"){
                 return res.status(400).json({
                     Message:"Id not numeric",
                     Status:400,
@@ -241,11 +241,11 @@ class User {
             )
         }
     }
-    public static async delete(id:number):Promise<MethodResponse>{
+    public static async Delete(id:number):Promise<MethodResponse>{
         let response=await pool.query(`SELECT id FROM "public"."Users" WHERE id = $1;`[id]);
         if(!response.row){
             return {
-                Message:"User not founded",
+                Message:"User not found",
                 Status:404,
                 Sucess:false
             }
@@ -253,7 +253,7 @@ class User {
         try{
             response=await pool.query(`DELETE FROM public."User" WHERE id = $1;`[id]);
             return {
-                Message:"Delete Suceffully",
+                Message:"Delete Successfully",
                 Sucess:true,
                 Status:200
             }
@@ -263,7 +263,43 @@ class User {
         }
     }
     public static async deleteRoute(req: Request, res: Response):Promise<Response>{
-        
+        const {id}= req.params
+        if(!id){
+            return res.status(400).json({
+                Message:"Parameters null",
+                Status:400,
+                Sucess:false
+            })
+        }
+        else if(typeof(id)!=="number"){
+            return res.status(400).json({
+                Message:"Id not numeric",
+                Status:400,
+                Sucess:false
+            })
+        }
+        let response=await User.Delete(id)
+        if(!response.Sucess){
+            if(response.Status==404){
+                return res.status(400).json({
+                    Message:"User not found",
+                    Status:404,
+                    Sucess:false
+                })  
+            }
+            else if(response.Status==501){
+                return res.status(501).json({
+                    Message:"Internal error in database",
+                    Status:404,
+                    Sucess:false
+                })
+            }
+        }
+        return res.status(200).json({
+            Message:"Deleted Successfully",
+            Status:200,
+            Sucess:true
+        })
     }
 }
 
