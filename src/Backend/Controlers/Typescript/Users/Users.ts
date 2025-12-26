@@ -34,52 +34,6 @@ class User {
             Sucess:false
         }
     }
-    private static async GET():Promise<MethodResponse>{
-        try{
-            const result = await pool.query('SELECT id,"Name","Email" FROM "public"."Users" LIMIT 100');
-            return {
-                Message:"query suceffuly",
-                Data:result.rows,
-                Status:200,
-                Sucess:true
-            }
-        }
-        catch(e){   
-            return await User.error(e)
-        }
-    }
-    public static async GetRouter(req: Request, res: Response):Promise<Response>{
-        try{
-            console.log(User.GET())
-            const result=await User.GET()
-            if(result.Sucess){
-                return res.status(200).json(
-                    {
-                        "status":200,
-                        "sucess":true,
-                        "data":result,
-                        "message":"Get Successfully"
-                    }
-                )
-            }
-            else{
-                return res.status(200).json(
-                    {
-                        "status":501,
-                        "sucess":false,
-                        "data":[],
-                        "message":"Internal Error"
-                    }
-                )
-            }
-        }
-        catch(e){
-            return res.status(501).json(
-                await User.error(e)
-            )
-        }
-
-    }
     private static async Create(Data:User):Promise<MethodResponse>{
         try{
             await pool.query(`INSERT INTO "Users" ("Name", "Password", "Email") VALUES ($1, $2, $3)`,[Data.Name,Data.Password,Data.Email])

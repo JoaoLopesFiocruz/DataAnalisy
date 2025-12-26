@@ -89,5 +89,23 @@ Response
 	"Sucess": true
 }
 ```
+#### put /users/Login
+This route is to Create a valide token to login in the site.
+``` json
+request 
+{
+    "Password":"123",
+    "Name":"Hermenegildo123", 
+    "Email":"Hermenegildo123@god.com"
+}
+Response
+{
+	"Message": "Login Successfully",
+	"Data": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiRW1haWwiOiJIZXJtZW5lZ2lsZG8xMjNAZ29kLmNvbSIsIkdlbmVyYXRlZCI6IjIwMjUtMTItMjNUMTU6Mjg6NTIuNDk4WiIsImlhdCI6MTc2NjUwMzczMiwiZXhwIjoxNzY2NTEwOTMyfQ.1cNCrV7yW31p1i4fVjhlibDdkv79g1HhvspYY9Rlfvw",
+	"Status": 200,
+	"Sucess": true
+}
+```
+
 ## Archive
 This application is too manage the files, in this case, manage images. This application save, update ,delete and answer the file request from the backend.
