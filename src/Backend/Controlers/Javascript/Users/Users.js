@@ -4,6 +4,7 @@ const response = require("express");
 var pool = require("../../../DB/Config");
 var bcrypt = require("bcryptjs");
 const jwt = require('jsonwebtoken');
+require("express");
 function isOnlyDigits(value) {
     return /^\d+$/.test(value);
 }
@@ -21,45 +22,6 @@ class User {
             Status: 501,
             Sucess: false
         };
-    }
-    static async GET() {
-        try {
-            const result = await pool.query('SELECT id,"Name","Email" FROM "public"."Users" LIMIT 100');
-            return {
-                Message: "query suceffuly",
-                Data: result.rows,
-                Status: 200,
-                Sucess: true
-            };
-        }
-        catch (e) {
-            return await User.error(e);
-        }
-    }
-    static async GetRouter(req, res) {
-        try {
-            console.log(User.GET());
-            const result = await User.GET();
-            if (result.Sucess) {
-                return res.status(200).json({
-                    "status": 200,
-                    "sucess": true,
-                    "data": result,
-                    "message": "Get Successfully"
-                });
-            }
-            else {
-                return res.status(200).json({
-                    "status": 501,
-                    "sucess": false,
-                    "data": [],
-                    "message": "Internal Error"
-                });
-            }
-        }
-        catch (e) {
-            return res.status(501).json(await User.error(e));
-        }
     }
     static async Create(Data) {
         try {
@@ -343,6 +305,42 @@ class User {
             Status: 200,
             Sucess: true
         });
+    }
+    static verifyLogin(Request, res, next) {
+        const authHeader = Request.headers.authorization;
+        if (!authHeader) {
+            return res.status(401).json({ message: 'Token não informado' });
+        }
+        const [, token] = authHeader.split(' ');
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            Request.user = decoded;
+            next();
+        }
+        catch (err) {
+            return res.status(401).json({ message: 'Token inválido ou expirado' });
+        }
+    }
+    static async correctLogin(req, res, next) {
+        const { id } = req.params;
+        let response = await pool.query(`SELECT "Email" FROM "public"."Users" WHERE id = $1;`, [id]);
+        if (response.rows.length) {
+            if (response.rows[0].Email != req.user.Email || id != req.user.id) {
+                return res.status(401).json({
+                    Message: "Invalid login",
+                    Status: 401,
+                    Sucess: false
+                });
+            }
+        }
+        else {
+            return res.status(404).json({
+                Message: "User not found",
+                Status: 404,
+                Sucess: false
+            });
+        }
+        next();
     }
 }
 module.exports = User;

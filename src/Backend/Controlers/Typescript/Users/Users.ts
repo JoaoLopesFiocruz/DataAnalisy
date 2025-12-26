@@ -1,8 +1,15 @@
-import type { Request, Response } from 'express';
+import type { Request, Response,NextFunction  } from 'express';
 import response = require('express');
 var pool =require("../../../DB/Config");
 var bcrypt =require("bcryptjs");
 const jwt = require('jsonwebtoken');
+import 'express'
+
+declare module 'express-serve-static-core' {
+  interface Request {
+    user?: any
+  }
+}
 interface User {
     Password?: string;
     Updatedate?: Date;
@@ -345,6 +352,43 @@ class User {
             Status:200,
             Sucess:true
         })
+    }
+    public static verifyLogin(Request: Request, res: Response,next: NextFunction):Response|void{
+        const authHeader = Request.headers.authorization
+
+        if (!authHeader) {
+            return res.status(401).json({ message: 'Token não informado' })
+        }
+
+        const [, token] = authHeader.split(' ')
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET)
+            Request.user = decoded
+            next()
+        } catch (err) {
+            return res.status(401).json({ message: 'Token inválido ou expirado' })
+        }
+    }
+    public static async correctLogin(req: Request, res: Response,next: NextFunction){
+        const {id}= req.params
+        let response = await pool.query(`SELECT "Email" FROM "public"."Users" WHERE id = $1;`, [id]);
+        if(response.rows.length){
+            if(response.rows[0].Email!=req.user.Email || id!=req.user.id){
+                return res.status(401).json({
+                    Message: "Invalid login",
+                    Status: 401,
+                    Sucess: false
+                })
+            }
+        }
+        else{
+            return res.status(404).json({
+                Message: "User not found",
+                Status: 404,
+                Sucess: false
+            });
+        }
+        next()
     }
 }
 
