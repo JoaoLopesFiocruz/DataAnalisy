@@ -18,9 +18,6 @@ interface User {
     Email?:string;
     id?:number;
 }
-function isOnlyDigits(value: string): boolean {
-  return /^\d+$/.test(value);
-}
 interface MethodResponse {
     Message:string,
     Data?:User[],
@@ -56,9 +53,8 @@ class User {
     }
     public static async CreateRouter(req: Request, res: Response):Promise<Response>{
         try{
-            //req.body:User
-            const {Password,Name,Email}=req.body
-            if(!Password||!Name||!Email){
+            const {Password,Name,Email,PasswordConfirm}=req.body
+            if(!Password||!Name||!Email||!PasswordConfirm){
                 return res.status(400).json({                    
                     "Message":"Parameters null",
                     "Status":400,
@@ -71,6 +67,13 @@ class User {
             if (response.rows.length){
                 return res.status(400).json({
                     "Message":"Email already logged",
+                    "Status":400,
+                    "Sucess":false
+                })
+            }
+            else if(Password!==PasswordConfirm){
+                return res.status(400).json({
+                    "Message":"Passwords don't match",
                     "Status":400,
                     "Sucess":false
                 })
@@ -130,13 +133,8 @@ class User {
             }
         }
         catch(e){
-            console.error(e)
-            return res.json(
-                {
-                    Message:"Erro interno",
-                    Status:500,
-                    Sucess:false
-                }
+            return res.status(501).json(
+                await User.error(e)
             )
         }
     }
@@ -222,13 +220,8 @@ class User {
             })
         }
         catch(e){
-            console.error(e)
             return res.status(501).json(
-                {
-                    Message:"Erro interno",
-                    Status:501,
-                    Sucess:false
-                }
+                await User.error(e)
             )
         }
     }
@@ -265,54 +258,60 @@ class User {
         }
     }
     public static async DeleteRouter(req: Request, res: Response):Promise<Response>{
-        const {id}= req.params
-        const {Password}= req.body
-        if(!id){
-            return res.status(400).json({
-                Message:"Parameters null",
-                Status:400,
-                Sucess:false
-            })
-        }
-        
-        else if(isNaN(Number(id))){
-            return res.status(400).json({
-                Message:"Id not numeric",
-                Status:400,
-                Sucess:false
-            })
-        }
-        let response=await User.Delete(parseInt(id, 10),Password)
-        if(!response.Sucess){
-            if(response.Status==404){
-                return res.status(404).json({
-                    Message:"User not found",
-                    Status:404,
-                    Sucess:false
-                })  
-            }
-            else if(response.Status==501){
-                return res.status(501).json({
-                    Message:"Internal error in database",
-                    Status:501,
+        try{
+            const {id}= req.params
+            const {Password}= req.body
+            if(!id||!Password){
+                return res.status(400).json({
+                    Message:"Parameters null",
+                    Status:400,
                     Sucess:false
                 })
             }
-            else if(response.Status==401){
-                return res.status(401).json({
-                    Message:"Password Incorrect",
-                    Status:401,
-                    Sucess:false
-                })
-            }
-        }
-
-        return res.status(200).json({
             
-            Message:"Deleted Successfully",
-            Status:200,
-            Sucess:true
-        })
+            else if(isNaN(Number(id))){
+                return res.status(400).json({
+                    Message:"Id not numeric",
+                    Status:400,
+                    Sucess:false
+                })
+            }
+            let response=await User.Delete(parseInt(id, 10),Password)
+            if(!response.Sucess){
+                if(response.Status==404){
+                    return res.status(404).json({
+                        Message:"User not found",
+                        Status:404,
+                        Sucess:false
+                    })  
+                }
+                else if(response.Status==501){
+                    return res.status(501).json({
+                        Message:"Internal error in database",
+                        Status:501,
+                        Sucess:false
+                    })
+                }
+                else if(response.Status==401){
+                    return res.status(401).json({
+                        Message:"Password Incorrect",
+                        Status:401,
+                        Sucess:false
+                    })
+                }
+            }
+
+            return res.status(200).json({
+                
+                Message:"Deleted Successfully",
+                Status:200,
+                Sucess:true
+            })
+        }catch(e){
+            return res.status(501).json(
+                await User.error(e)
+            )
+        }
     }
     private static generateToken(user:User):string{
         const token = jwt.sign(
@@ -327,31 +326,48 @@ class User {
       return token
     }
     public static async Login(req: Request, res: Response):Promise<Response>{
-        const {Email,Password}=req.body
-        console.log("legal")
-        let response=await pool.query(`SELECT "Password",id,"Email" FROM "public"."Users" WHERE "Email" = $1;`,[Email]);
-        if(!response.rows.length){
-            return res.status(404).json({
-                Message:"Email not founded",
-                Status:404,
-                Sucess:false
+        try{
+            const {Email,Password}=req.body
+            if(!Email||!Password){
+                return res.status(400).json({
+                    Message:"Parameters null",
+                    Status:400,
+                    Sucess:false
+                })
+            }
+            let response=await pool.query(`SELECT "Password",id,"Email" FROM "public"."Users" WHERE "Email" = $1;`,[Email]);
+            if(!response.rows.length){
+                return res.status(404).json({
+                    Message:"Email not founded",
+                    Status:404,
+                    Sucess:false
+                })
+            }
+            let comparation=bcrypt.compare(Password, response.rows[0].Password)
+            if(!comparation){
+                return res.status(401).json({
+                    Message:"Password incorrect",
+                    Status:401,
+                    Sucess:false
+                })   
+            }
+            let token=User.generateToken({
+                id:response.rows[0].id,
+                Email:response.rows[0].Email
+            })
+            return res.status(200).json({
+                Message:"Login Successfully",
+                Data:token,
+                Status:200,
+                Sucess:true
             })
         }
-        let comparation=bcrypt.compare(Password, response.rows[0].Password)
-        if(!comparation){
-            return res.status(401).json({
-                Message:"Password incorrect",
-                Status:401,
-                Sucess:false
-            })   
+        catch(e){
+            return res.status(501).json(
+                await User.error(e)
+            )
         }
-        let token=User.generateToken(response.rows[0])
-        return res.status(200).json({
-            Message:"Login Successfully",
-            Data:token,
-            Status:200,
-            Sucess:true
-        })
+        
     }
     public static verifyLogin(Request: Request, res: Response,next: NextFunction):Response|void{
         const authHeader = Request.headers.authorization
@@ -389,6 +405,51 @@ class User {
             });
         }
         next()
+    }
+    public static async PasswordChangeRoute(req: Request, res: Response){
+        try{
+            const {NewPassword,NewPasswordConfirm}=req.body
+            const id = req.user.id
+            if(!id||!NewPassword||!NewPasswordConfirm){
+                return res.status(400).json({
+                    Message:"Parameters null",
+                    Status:400,
+                    Sucess:false
+                })
+            }
+            else if(NewPassword!==NewPasswordConfirm){
+                return res.status(400).json({
+                    "Message":"Passwords don't match",
+                    "Status":400,
+                    "Sucess":false
+                })
+            }
+            const response = await pool.query(
+                `SELECT id FROM "public"."Users" WHERE id = $1;`,[id]
+            );
+            if(!response.rows.length){
+                return res.status(404).json({
+                    "Message":"User not found",
+                    "Status":404,
+                    "Sucess":false
+                })
+            }
+            const NewPasswordhash = await bcrypt.hash(NewPassword, 12);
+            const result = await pool.query(
+                'UPDATE "Users" SET "Password"=$1 WHERE id = $2 RETURNING "Name"',
+                [NewPasswordhash, id]
+            );
+            
+            return res.status(200).json({    
+                Message:`${result.rows[0].Name}'s password Updated Successfully`,
+                Status:200,
+                Sucess:true
+            })
+        }catch(e){
+            return res.status(501).json(
+                await User.error(e)
+            )
+        }
     }
 }
 

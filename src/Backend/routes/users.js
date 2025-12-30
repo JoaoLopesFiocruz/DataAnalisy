@@ -12,4 +12,5 @@ router.put('/Login', user.Login);
 router.get('/:id(\\d+)', user.verifyLogin, user.correctLogin, user.GetByID);
 router.put('/:id(\\d+)', user.verifyLogin, user.correctLogin, user.UpdateRouter);
 router.delete('/:id(\\d+)', user.verifyLogin, user.correctLogin, user.DeleteRouter);
+router.put("/Pasword",user.verifyLogin,user.PasswordChangeRoute)
 module.exports = router;

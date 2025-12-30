@@ -1,12 +1,14 @@
 import Nav from "../components/Dashboard/BarraLateral/Main"
 import Input from "../components/Input/Main"
 import Button from "../components/Button/Confirmform"
+import Modal from "../components/Modal/Main"
 import { useState } from "react";
 import { useEffect } from 'react';
 
 export default function App() {
     const [photo, setPhoto] = useState(false);
     const [foto, setFoto] = useState(null);
+    const [popup, setpopup] = useState(true);
     const enviarFoto = (arquivo) => {
         if (!arquivo || !arquivo.type.startsWith("image/")) {
             alert("Por favor, selecione uma imagem válida.");
@@ -17,7 +19,6 @@ export default function App() {
         const base64 = reader.result;
         setFoto(base64)
         };
-
         reader.readAsDataURL(arquivo); // <- Converte para base64
     };
     const handleChange = async (e) => {
@@ -28,7 +29,6 @@ export default function App() {
         console.log(foto)
     };
     return (
-        
         <div className="flex bg-[#333] w-full">
             <Nav page={0}/>
             <form action="" className="relative flex flex-1 flex-col items-center justify-center">
@@ -50,18 +50,6 @@ export default function App() {
                 placeholder="email"
                 name="email"
                 icon="fa-solid fa-envelope"/>
-                <Input 
-                value=""
-                type="password"
-                placeholder="Password"
-                name="password"
-                icon="fa-solid fa-lock"/>
-                <Input
-                value=""
-                type="password"
-                placeholder="password confirm"
-                name="password confirm"
-                icon="fa-solid fa-lock"/>
                 <Button />
                 {photo ? 
                     <div class="flex items-center absolute justify-center  backdrop-blur-xl bg-[#fff]/30 w-[100%] h-[100%] right-0 cursor-pointer ">
@@ -77,8 +65,13 @@ export default function App() {
                         </label>
                     </div> 
                 : ""}
+                {
+                popup?<div class="absolute w-[100%] h-[100%] flex flex-col items-center justify-center  bg-[#0000001a] backdrop-blur-[40px]">
+                    <Modal />
+                </div>
+                : <div className="absolute"></div>
+                }
             </form>
         </div>
     )
 }
-
