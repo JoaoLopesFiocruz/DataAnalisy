@@ -3,7 +3,6 @@ type AppProps = {
     textspan: string;
     placeholder:string;
     name:string;
-
 }
 
 export default function NormalForm({ type, textspan,placeholder,name }: AppProps) {
