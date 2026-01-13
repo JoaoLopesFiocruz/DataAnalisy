@@ -2,11 +2,34 @@ import Nav from "../components/Dashboard/BarraLateral/Main"
 import Input from "../components/Input/Main"
 import Modal from "../components/Modal/Main"
 import { useState } from "react";
+import { useParams } from 'react-router-dom';
+import AcessBloqued from "./acessBloqued"
+import axios from "axios";
+const token = sessionStorage.getItem("token"); // ou localStorage.getItem("token")
+
+// Cria uma instância do Axios
+const api = axios.create({
+  baseURL: "http://localhost:3000/",
+  headers: {
+    Authorization: `Bearer ${token}`, // insere o token automaticamente
+  },
+});
 
 export default function App() {
+    const { id } = useParams();
+    const [User, setUser] = useState({});
+    const [load, setLoad] = useState(false);
+    async function GetUser(){
+        await api.get(`/users/${id}`).then(response => {
+            setUser(response.data.Data[0])
+        }).catch(() => {
+            setLoad(false)
+        })
+        
+    }
     function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault(); // ⛔ impede o reload / envio padrão
-
+        GetUser()
         console.log("Form enviado manualmente");
     }
 
@@ -34,8 +57,7 @@ export default function App() {
     };
     return (
         <div className="flex bg-[#333] w-full">
-            <Nav page={0}/>
-            <form action="" className="relative flex flex-1 flex-col items-center justify-center" onSubmit={handleSubmit}>
+            {load? <><Nav page={0}/><form action="" className="relative flex flex-1 flex-col items-center justify-center" onSubmit={handleSubmit}>
                 <div className="flex relative">
                     {
                     foto?<img src={foto} alt="" className="mb-[60px] me-[30px] w-[200px] h-[200px] rounded-full object-cover" />
@@ -79,7 +101,9 @@ export default function App() {
                 </div>
                 : <div className="absolute"></div>
                 }
-            </form>
+            </form> </>: 
+            <AcessBloqued />
+            }
         </div>
     )
 }

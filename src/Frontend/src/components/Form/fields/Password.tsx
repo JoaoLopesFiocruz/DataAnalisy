@@ -13,12 +13,12 @@ export default function PasswordField({ alternativeSpan, textspan,name,tamanho }
   }
   const [visible, setVisible] = useState(false);
   return (
-    <div className="text-start flex flex-col w-full">
+    <div className="text-start flex flex-col w-full text-[#fff]">
         <label  htmlFor={name} className="font-inter text-500 text-[16px] flex justify-between">
-            <span>
+            <span >
                 {textspan}
             </span>
-            <span className="text-[12px] text-[#299D91] text-500 hover:cursor-pointer hover:underline focus:underline">
+            <span className="text-[12px] text-[#00B9E8] text-500 hover:cursor-pointer hover:underline focus:underline">
                 {alternativeSpan}
             </span>
         </label>

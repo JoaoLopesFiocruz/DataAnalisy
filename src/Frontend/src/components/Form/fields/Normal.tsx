@@ -7,7 +7,7 @@ type AppProps = {
 
 export default function NormalForm({ type, textspan,placeholder,name }: AppProps) {
   return (
-    <div className="text-start flex flex-col w-full">
+    <div className="text-start flex flex-col w-full text-[#fff] ">
         <label  htmlFor={name} className="font-inter text-500 text-[16px]">
             {textspan}
         </label>
