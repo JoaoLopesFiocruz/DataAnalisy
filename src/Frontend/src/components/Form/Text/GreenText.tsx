@@ -6,7 +6,7 @@ type AppProps = {
 export default function NormalForm({text,link}: AppProps) {
   return (
     <a href={link} className="no-underline">
-        <div className="text-center text-600 text-[16px] text-[#299D91] font-inter w-full hover:text-[#23857b] hover:underline hover:cursor-pointer">
+        <div className="text-center text-600 text-[16px] text-[#00ffe5] font-inter w-full hover:underline hover:cursor-pointer">
             {text}
         </div>
     </a>

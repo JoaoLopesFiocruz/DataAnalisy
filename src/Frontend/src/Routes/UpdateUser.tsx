@@ -18,14 +18,14 @@ const api = axios.create({
 export default function App() {
     const { id } = useParams();
     const [User, setUser] = useState({});
-    const [load, setLoad] = useState(false);
+    const [load, setLoad] = useState(token != null && token != undefined);
+    
     async function GetUser(){
         await api.get(`/users/${id}`).then(response => {
             setUser(response.data.Data[0])
         }).catch(() => {
             setLoad(false)
         })
-        
     }
     function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault(); // ⛔ impede o reload / envio padrão

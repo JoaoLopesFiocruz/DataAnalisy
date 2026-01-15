@@ -1,11 +1,12 @@
-import TextForm from "../components/Form/fields/Normal"
-import Password from "../components/Form/fields/Password"
-import Checkbox from "../components/Form/fields/Checkbox"
-import SubmitButton from "../components/Form/buttons/GreenButton"
-import GoogleButon from "../components/Form/buttons/GoogleButton"
-import CreateAcount from "../components/Form/Text/GreenText"
+
 export default function acessBloqued() {
     return (
-        <></>
+        <div className="flex flex-col flex-1 h-screen w-full bg-[#444] items-center">
+            <div className="text-center">
+                <h1 className="text-[#64dda1] text-[15rem] p-[0px] mb-[0px]">401</h1>
+                <h2 className="text-[#64dda1] text-[5rem]">Acess unaltorized, please, make a <a href="/Login" className="no-underline text-[#00ffc8]">login</a>.</h2>
+            </div>
+            
+        </div>
     )
 }

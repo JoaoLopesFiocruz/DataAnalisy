@@ -18,7 +18,7 @@ export default function PasswordField({ alternativeSpan, textspan,name,tamanho }
             <span >
                 {textspan}
             </span>
-            <span className="text-[12px] text-[#00B9E8] text-500 hover:cursor-pointer hover:underline focus:underline">
+            <span className="text-[12px] text-[#00ffe5] text-500 hover:cursor-pointer hover:underline focus:underline">
                 {alternativeSpan}
             </span>
         </label>

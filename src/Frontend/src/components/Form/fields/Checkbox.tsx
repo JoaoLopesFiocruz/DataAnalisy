@@ -12,7 +12,7 @@ export default function NormalForm({textspan,name,link=null }: AppProps) {
         <div className="w-[20px] h-[20px] absolute hover:cursor-pointer hover:bg-[#ffffff1d] bottom-[4px] border left-[4px]" onClick={() => {document.getElementById(name).checked = !document.getElementById(name).checked;}}></div>
       </div>
         <label  htmlFor={name} className="font-inter text-500 text-[16px]">
-          <div className="flex flex-row gap-[4px]">
+          <div className="flex flex-row gap-[4px] text-[#00ffe5]">
             {textspan}{link}
           </div>
         </label>

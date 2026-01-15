@@ -6,14 +6,11 @@ import BillsImage from "../../../assets/Bills.svg"
 import ExpensesImage from "../../../assets/Expenses.svg"
 import GoalsImage from "../../../assets/Goals.svg"
 import SetingsImage from "../../../assets/Setings.svg"
-type User = {
-    
-}
 type MainProps = {
-  user: User;
-  page?: number; // opcional, com valor padrão depois
+  //user?: User;
+  page: number;
 };
-export default function Main({ user, page = 0 }: MainProps) {
+export default function Main({page = 0 }: MainProps) {
   return (
     <div className="flex  flex-col w-[280px] h-screen bg-[#191919] items-center py-[48px] px-[28px]" >
       <span className="text-[#FFF] text-[24px] font-poppins text-800 mb-[40px]">
