@@ -1,24 +1,33 @@
+import AcessBloqued from "../components/ControlAcess/acessBloqued";
+import Loading from "../components/ControlAcess/Loading";
+import Nav from "../components/Dashboard/BarraLateral/Main";
+import { useEffect, useState } from "react";
+import {auth} from "../Midleware/Authorization"
 
-import AcessBloqued from "./acessBloqued"
-import Nav from "../components/Dashboard/BarraLateral/Main"
-import { useState } from "react";
-import axios from "axios";
-import acessBloqued from "./acessBloqued";
-const token = sessionStorage.getItem("token"); // ou localStorage.getItem("token")
 
-// Cria uma instância do Axios
-const api = axios.create({
-  baseURL: "http://localhost:3000/",
-  headers: {
-    Authorization: `Bearer ${token}`, // insere o token automaticamente
-  },
-});
 export default function App() {
-    const [load, setLoad] = useState(token != null && token != undefined);
-    console.log(load,token!==null)
-    return (
-      <>
-        {load?<><Nav page={1}/></>:<AcessBloqued/>}
-      </>
-    )
+  const [authorized, setAuthorized] = useState(true); // null = carregando
+  const [loading, setLoading] = useState(true); // null = carregando
+
+
+  useEffect(() => {
+    async function checkAuth() {
+      const isAuthorized = await auth();
+      setAuthorized(isAuthorized);
+      setLoading(false);
+    }
+
+    checkAuth();
+  }, []);
+
+
+  if (loading) {
+    return <Loading />
+  }
+
+  return (
+    <>
+      {authorized ? <><Nav page={1} /></> : <AcessBloqued />}
+    </>
+  );
 }

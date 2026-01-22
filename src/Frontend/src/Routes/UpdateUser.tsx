@@ -3,22 +3,39 @@ import Input from "../components/Input/Main"
 import Modal from "../components/Modal/Main"
 import { useState } from "react";
 import { useParams } from 'react-router-dom';
-import AcessBloqued from "./acessBloqued"
+import AcessBloqued from "../components/ControlAcess/acessBloqued"
+import Loading from "../components/ControlAcess/Loading"
 import axios from "axios";
 const token = sessionStorage.getItem("token"); // ou localStorage.getItem("token")
-
+import { auth } from "../Midleware/Authorization";
+import { useEffect } from "react";
 // Cria uma instância do Axios
-const api = axios.create({
-  baseURL: "http://localhost:3000/",
-  headers: {
-    Authorization: `Bearer ${token}`, // insere o token automaticamente
-  },
-});
+
 
 export default function App() {
+    const api = axios.create({
+        baseURL: "http://localhost:3000/",
+        headers: {
+            Authorization: `Bearer ${token}`, // insere o token automaticamente
+        },
+    });
     const { id } = useParams();
     const [User, setUser] = useState({});
     const [load, setLoad] = useState(token != null && token != undefined);
+    const [authorized, setAuthorized] = useState(true); // null = carregando
+      const [loading, setLoading] = useState(true); // null = carregando
+    
+    
+      useEffect(() => {
+        async function checkAuth() {
+          const isAuthorized = await auth();
+          setAuthorized(isAuthorized);
+          setLoading(false);
+        }
+    
+        checkAuth();
+      }, []);
+    
     
     async function GetUser(){
         await api.get(`/users/${id}`).then(response => {
@@ -32,7 +49,6 @@ export default function App() {
         GetUser()
         console.log("Form enviado manualmente");
     }
-
     const [photo, setPhoto] = useState(false);
     const [foto, setFoto] = useState(null);
     const [popup, setpopup] = useState(false);
@@ -41,6 +57,7 @@ export default function App() {
             alert("Por favor, selecione uma imagem válida.");
             return;
         }
+        
         const reader = new FileReader();
         reader.onloadend = () => {
         const base64 = reader.result;
@@ -55,6 +72,9 @@ export default function App() {
         setPhoto(false)
         console.log(foto)
     };
+    if (loading) {
+        return <Loading />
+    }
     return (
         <div className="flex bg-[#333] w-full">
             {load? <><Nav page={0}/><form action="" className="relative flex flex-1 flex-col items-center justify-center" onSubmit={handleSubmit}>
