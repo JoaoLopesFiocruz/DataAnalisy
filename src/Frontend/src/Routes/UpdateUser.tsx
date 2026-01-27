@@ -21,7 +21,6 @@ export default function App() {
     });
     const { id } = useParams();
     const [User, setUser] = useState({});
-    const [load, setLoad] = useState(token != null && token != undefined);
     const [authorized, setAuthorized] = useState(true); // null = carregando
       const [loading, setLoading] = useState(true); // null = carregando
     
@@ -52,7 +51,7 @@ export default function App() {
     const [photo, setPhoto] = useState(false);
     const [foto, setFoto] = useState(null);
     const [popup, setpopup] = useState(false);
-    const enviarFoto = (arquivo) => {
+    const enviarFoto = (arquivo:any) => {
         if (!arquivo || !arquivo.type.startsWith("image/")) {
             alert("Por favor, selecione uma imagem válida.");
             return;
@@ -77,7 +76,7 @@ export default function App() {
     }
     return (
         <div className="flex bg-[#333] w-full">
-            {load? <><Nav page={0}/><form action="" className="relative flex flex-1 flex-col items-center justify-center" onSubmit={handleSubmit}>
+            {authorized? <><Nav page={0}/><form action="" className="relative flex flex-1 flex-col items-center justify-center" onSubmit={handleSubmit}>
                 <div className="flex relative">
                     {
                     foto?<img src={foto} alt="" className="mb-[60px] me-[30px] w-[200px] h-[200px] rounded-full object-cover" />
