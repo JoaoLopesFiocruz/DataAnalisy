@@ -1,9 +1,8 @@
-import type { APIResponse } from "../../../Types/APIResponse";
 type AppProps = {
     text: string;
     name:string;
     label:string;
-    action:()=>APIResponse<string>;
+    action:()=>void;
 }
 
 export default function NormalForm({label,text,name,action}: AppProps) {

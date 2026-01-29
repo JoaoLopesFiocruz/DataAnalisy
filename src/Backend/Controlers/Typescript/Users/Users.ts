@@ -56,9 +56,9 @@ class User {
             const {Password,Name,Email,PasswordConfirm}=req.body
             if(!Password||!Name||!Email||!PasswordConfirm){
                 return res.status(400).json({                    
-                    "Message":"Parameters null",
-                    "Status":400,
-                    "Sucess":false
+                    Message:"Parameters null",
+                    Status:400,
+                    Sucess:false
                 })
             }
             const response = await pool.query(
@@ -66,16 +66,16 @@ class User {
             );
             if (response.rows.length){
                 return res.status(400).json({
-                    "Message":"Email already logged",
-                    "Status":400,
-                    "Sucess":false
+                    Message:"Email already logged",
+                    Status:400,
+                    Sucess:false
                 })
             }
             else if(Password!==PasswordConfirm){
                 return res.status(400).json({
-                    "Message":"Passwords don't match",
-                    "Status":400,
-                    "Sucess":false
+                    Message:"Passwords don't match",
+                    Status:400,
+                    Sucess:false
                 })
             }
             else{

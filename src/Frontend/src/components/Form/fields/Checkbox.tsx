@@ -5,6 +5,7 @@ type AppProps = {
   }
 
 export default function NormalForm({textspan,name,link=null }: AppProps) {
+  console.log(name)
   return (
     <div className="text-start flex flex-row w-full items-center gap-[16px]">
       <div className="w-max relative">

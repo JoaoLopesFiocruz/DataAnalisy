@@ -9,10 +9,10 @@ export default function Alert({ text, sucess, code }: AppProps) {
     <>
       <div
         id="alert"
-        className={`w-[300px] h-[190px] absolute rounded-[30px] p-[20px]
+        className={`w-[300px] h-[190px] absolute rounded-[30px] p-[20px] flex items-center justify-center flex-col gap-5 text-4xl
         ${sucess ? "bg-[#177245]" : "bg-[#ff0000b0]"}`}
       >
-        <h1 className="text-center w-full text-[#F5F5F5] text-2xl">
+        <h1 className="text-center w-full text-[#F5F5F5]">
           {code}
         </h1>
         <p className="text-center text-[#F5F5F5]">
