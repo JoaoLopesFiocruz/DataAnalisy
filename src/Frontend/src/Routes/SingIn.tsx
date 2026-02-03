@@ -87,10 +87,12 @@ export default function App() {
                 .catch((err) => {
                     setpopup(true);
                     setSuccess(false)
+                    console.log(err.response.data.Message)
                     setAPIResponse({
                         Success: false,
-                        Message: "Erro na API"
+                        Message: err.response.data.Message
                     });
+                    console.log(APIResponse)
                      setTimeout(() => {
                         setpopup(false);
                         executando.current = false;

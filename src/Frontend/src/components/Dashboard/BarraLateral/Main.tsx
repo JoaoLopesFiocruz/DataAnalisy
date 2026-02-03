@@ -8,11 +8,32 @@ import BillsImage from "../../../assets/Bills.svg";
 import ExpensesImage from "../../../assets/Expenses.svg";
 import GoalsImage from "../../../assets/Goals.svg";
 import SettingsImage from "../../../assets/Setings.svg";
+import axios from "axios";
+import { useEffect,useState } from "react";
 
 export default function Sidebar() {
+  const [Name, setName] = useState("Loadin..."); 
   const location = useLocation();
   const navigate = useNavigate();
+  const token = sessionStorage.getItem("token"); // ou localStorage.getItem("token")
+  const payload = token?.split(".")[1]
+  const decoded = JSON.parse(
+      atob(payload.replace(/-/g, '+').replace(/_/g, '/'))
+  );
+  const api = axios.create({
+      baseURL: "http://localhost:3000/",
+      headers: {
+          Authorization: `Bearer ${token}`, // insere o token automaticamente
+      },
+  });
+  useEffect(() => {
+    api.get(`http://localhost:3000/users/${decoded.id}`,{            
+    }).then((res) => {
+      setName(res.data.Data[0].Name)
+    }).catch(() => {
+    })
 
+  })
   const menu = [
     { path: "/overview", text: "Overview", icon: OverviewImage },
     { path: "/balances", text: "Balances", icon: BalanceImage },
@@ -90,8 +111,8 @@ export default function Sidebar() {
           alt="User"
         />
         <div className="flex flex-col gap-[3px]">
-          <span>Hermenegildo</span>
-          <Link to="/editar-perfil" className="no-underline text-[#efefef]">
+          <span>{Name}</span>
+          <Link to={`/updateUser/${decoded.id}`} className="no-underline text-[#efefef]">
             Edit Profile
           </Link>
         </div>

@@ -16,7 +16,6 @@ export default function App() {
       setAuthorized(isAuthorized);
       setLoading(false);
     }
-
     checkAuth();
   }, []);
 
