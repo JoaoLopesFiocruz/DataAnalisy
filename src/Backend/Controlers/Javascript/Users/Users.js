@@ -1,25 +1,9 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const response = require("express");
-var pool = require("../../../DB/Config");
-var bcrypt = require("bcryptjs");
-const jwt = require('jsonwebtoken');
-require("express");
+import error from '../Global/Method/error.js';
+import pool from "../../../DB/Config.js";
+import bcrypt from 'bcryptjs';
+import jwt from "jsonwebtoken";
+import 'express';
 class User {
-    static async error(e) {
-        if (e instanceof Error) {
-            console.error('Database query error:', e.message);
-        }
-        else {
-            console.error('Unknown error:', e);
-        }
-        return {
-            Message: "Internal error",
-            Data: [],
-            Status: 501,
-            Sucess: false
-        };
-    }
     static async Create(Data) {
         try {
             await pool.query(`INSERT INTO "Users" ("Name", "Password", "Email") VALUES ($1, $2, $3)`, [Data.Name, Data.Password, Data.Email]);
@@ -30,7 +14,7 @@ class User {
             };
         }
         catch (e) {
-            return await User.error(e);
+            return await error(e);
         }
     }
     static async CreateRouter(req, res) {
@@ -38,24 +22,24 @@ class User {
             const { Password, Name, Email, PasswordConfirm } = req.body;
             if (!Password || !Name || !Email || !PasswordConfirm) {
                 return res.status(400).json({
-                    "Message": "Parameters null",
-                    "Status": 400,
-                    "Sucess": false
+                    Message: "Parameters null",
+                    Status: 400,
+                    Sucess: false
                 });
             }
             const response = await pool.query(`SELECT id FROM "public"."Users" WHERE "Email" = $1;`, [Email]);
             if (response.rows.length) {
                 return res.status(400).json({
-                    "Message": "Email already logged",
-                    "Status": 400,
-                    "Sucess": false
+                    Message: "Email already logged",
+                    Status: 400,
+                    Sucess: false
                 });
             }
             else if (Password !== PasswordConfirm) {
                 return res.status(400).json({
-                    "Message": "Passwords don't match",
-                    "Status": 400,
-                    "Sucess": false
+                    Message: "Passwords don't match",
+                    Status: 400,
+                    Sucess: false
                 });
             }
             else {
@@ -78,7 +62,7 @@ class User {
             }
         }
         catch (e) {
-            return res.status(501).json(await User.error(e));
+            return res.status(501).json(await error(e));
         }
     }
     static async GetByID(req, res) {
@@ -94,7 +78,6 @@ class User {
                 });
             }
             else {
-                console.log(response);
                 return res.json({
                     Message: "usuário não encontrado",
                     Status: 404,
@@ -103,12 +86,12 @@ class User {
             }
         }
         catch (e) {
-            return res.status(501).json(await User.error(e));
+            return res.status(501).json(await error(e));
         }
     }
     static async Update(id, User) {
         let response = await pool.query(`SELECT "Password","Name","Email","Createdate" FROM "public"."Users" WHERE id = $1;`, [id]);
-        if (!response.rows.length) {
+        if (!response.rows.length || !User.Password) { // the User.password is only to garant the password isn't null
             return {
                 Message: "id not found",
                 Status: 404,
@@ -185,7 +168,7 @@ class User {
             });
         }
         catch (e) {
-            return res.status(501).json(await User.error(e));
+            return res.status(501).json(await error(e));
         }
     }
     static async Delete(id, Password) {
@@ -214,7 +197,7 @@ class User {
             };
         }
         catch (e) {
-            return await User.error(e);
+            return await error(e);
         }
     }
     static async DeleteRouter(req, res) {
@@ -266,16 +249,21 @@ class User {
             });
         }
         catch (e) {
-            return res.status(501).json(await User.error(e));
+            return res.status(501).json(await error(e));
         }
     }
     static generateToken(user) {
-        const token = jwt.sign({
-            id: user.id,
-            Email: user.Email,
-            Generated: new Date()
-        }, process.env.JWT_SECRET, { expiresIn: '2h' });
-        return token;
+        if (process.env.JWT_SECRET) {
+            const token = jwt.sign({
+                id: user.id,
+                Email: user.Email,
+                Generated: new Date()
+            }, process.env.JWT_SECRET, { expiresIn: '2h' });
+            return token;
+        }
+        else {
+            return "";
+        }
     }
     static async Login(req, res) {
         try {
@@ -315,29 +303,51 @@ class User {
             });
         }
         catch (e) {
-            return res.status(501).json(await User.error(e));
+            return res.status(501).json(await error(e));
         }
     }
-    static verifyLogin(Request, res, next) {
-        const authHeader = Request.headers.authorization;
+    static verifyLogin(req, res, next) {
+        const authHeader = req.headers.authorization;
         if (!authHeader) {
-            return res.status(401).json({ message: 'Token não informado' });
+            res.status(401).json({
+                Message: "Token não informado",
+                Status: 401,
+                Sucess: false
+            });
+            return;
         }
-        const [, token] = authHeader.split(' ');
+        const [, token] = authHeader.split(" ");
+        if (!token) {
+            console.log("entrou");
+            res.status(401).json({
+                Message: "Token inválido",
+                Status: 401,
+                Sucess: false
+            });
+            return;
+        }
+        const JWT_SECRET = process.env.JWT_SECRET;
+        if (!JWT_SECRET) {
+            throw new Error("JWT_SECRET não definido");
+        }
         try {
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            Request.user = decoded;
+            const decoded = jwt.verify(token, JWT_SECRET);
+            req.user = decoded;
             next();
         }
         catch (err) {
-            return res.status(401).json({ message: 'Token inválido ou expirado' });
+            res.status(401).json({
+                Message: "Invalid Token",
+                Status: 401,
+                Sucess: false
+            });
         }
     }
     static async correctLogin(req, res, next) {
         const { id } = req.params;
         let response = await pool.query(`SELECT "Email" FROM "public"."Users" WHERE id = $1;`, [id]);
         if (response.rows.length) {
-            if (response.rows[0].Email != req.user.Email || id != req.user.id) {
+            if (response.rows[0].Email != req.user?.Email || id != req.user?.id) {
                 return res.status(401).json({
                     Message: "Invalid login",
                     Status: 401,
@@ -357,7 +367,7 @@ class User {
     static async PasswordChangeRoute(req, res) {
         try {
             const { NewPassword, NewPasswordConfirm } = req.body;
-            const id = req.user.id;
+            const id = req.user?.id;
             if (!id || !NewPassword || !NewPasswordConfirm) {
                 return res.status(400).json({
                     Message: "Parameters null",
@@ -367,17 +377,17 @@ class User {
             }
             else if (NewPassword !== NewPasswordConfirm) {
                 return res.status(400).json({
-                    "Message": "Passwords don't match",
-                    "Status": 400,
-                    "Sucess": false
+                    Message: "Passwords don't match",
+                    Status: 400,
+                    Sucess: false
                 });
             }
             const response = await pool.query(`SELECT id FROM "public"."Users" WHERE id = $1;`, [id]);
             if (!response.rows.length) {
                 return res.status(404).json({
-                    "Message": "User not found",
-                    "Status": 404,
-                    "Sucess": false
+                    Message: "User not found",
+                    Status: 404,
+                    Sucess: false
                 });
             }
             const NewPasswordhash = await bcrypt.hash(NewPassword, 12);
@@ -389,9 +399,9 @@ class User {
             });
         }
         catch (e) {
-            return res.status(501).json(await User.error(e));
+            return res.status(501).json(await error(e));
         }
     }
 }
-module.exports = User;
+export default User;
 //# sourceMappingURL=Users.js.map

@@ -3,7 +3,7 @@ import Loading from "../components/ControlAcess/Loading";
 import Nav from "../components/Dashboard/BarraLateral/Main";
 import { useEffect, useState } from "react";
 import {auth} from "../Midleware/Authorization"
-
+import Assunt from "../components/Chart/Main/Assunt"
 
 export default function App() {
   const [authorized, setAuthorized] = useState(true); // null = carregando
@@ -26,7 +26,14 @@ export default function App() {
 
   return (
     <>
-      {authorized ? <><Nav page={1} /></> : <AcessBloqued />}
+      {authorized ? <>
+      <div className="flex">
+        <Nav page={1} />
+        <div className="flex flex-1 bg-[#333]">
+          <Assunt />
+        </div>
+      </div>
+      </> : <AcessBloqued />}
     </>
   );
 }

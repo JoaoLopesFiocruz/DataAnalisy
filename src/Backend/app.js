@@ -1,14 +1,15 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var cors = require("cors");
+import express from "express"
+import path from "path";
+import cookieParser from "cookie-parser";
+import cors from "cors"
+import indexRouter from "./routes/index.js"
+import logger from "morgan"
+import usersRouter from "./routes/users.js"
+import DataRouter from "./routes/data.js"
+import { fileURLToPath } from "url";
 
-
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 var app = express();
 
 app.use(logger('dev'));
@@ -20,6 +21,7 @@ app.use(cors());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/data', DataRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -27,4 +29,4 @@ app.use(function(req, res, next) {
 });
 
 // error handler
-module.exports = app;
+export default app;

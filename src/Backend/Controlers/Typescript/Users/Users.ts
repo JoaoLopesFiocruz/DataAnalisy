@@ -1,15 +1,11 @@
 import type { Request, Response,NextFunction  } from 'express';
-import response = require('express');
-var pool =require("../../../DB/Config");
-var bcrypt =require("bcryptjs");
-const jwt = require('jsonwebtoken');
+import type { MethodResponse } from "../Global/Types/MethodResponse.js";
+import error from '../Global/Method/error.js';
+import pool from "../../../DB/Config.js"
+import bcrypt from 'bcryptjs';
+import jwt from "jsonwebtoken"
 import 'express'
 
-declare module 'express-serve-static-core' {
-  interface Request {
-    user?: any
-  }
-}
 interface User {
     Password?: string;
     Updatedate?: Date;
@@ -18,27 +14,13 @@ interface User {
     Email?:string;
     id?:number;
 }
-interface MethodResponse {
-    Message:string,
-    Data?:User[],
-    Status:Number,
-    Sucess:boolean
+declare module 'express-serve-static-core' {
+  interface Request {
+    user?: User
+  }
 }
 class User {   
-    private static async error(e:any):Promise<MethodResponse>{
-        if (e instanceof Error) {
-            console.error('Database query error:', e.message);
-        } else {
-            console.error('Unknown error:', e);
-        }
-        return {
-            Message:"Internal error",
-            Data:[],
-            Status:501,
-            Sucess:false
-        }
-    }
-    private static async Create(Data:User):Promise<MethodResponse>{
+    private static async Create(Data:User):Promise<MethodResponse<null>>{
         try{
             await pool.query(`INSERT INTO "Users" ("Name", "Password", "Email") VALUES ($1, $2, $3)`,[Data.Name,Data.Password,Data.Email])
             return {
@@ -48,10 +30,10 @@ class User {
             }
         }
         catch(e){   
-            return await User.error(e)
+            return await error(e)
         }
     }
-    public static async CreateRouter(req: Request, res: Response):Promise<Response>{
+    public static async CreateRouter(req: Request, res: Response):Promise<Response<MethodResponse<null>>>{
         try{
             const {Password,Name,Email,PasswordConfirm}=req.body
             if(!Password||!Name||!Email||!PasswordConfirm){
@@ -99,12 +81,12 @@ class User {
         }
         catch(e){
             return res.status(501).json(
-                await User.error(e)
+                await error(e)
             )
         }
         
     }
-    public static async GetByID(req: Request, res: Response):Promise<Response>{
+    public static async GetByID(req: Request, res: Response):Promise<Response<MethodResponse<User>>>{
         try{
             const {id}= req.params
             const response = await pool.query(
@@ -122,7 +104,6 @@ class User {
                 )   
             }
             else{
-                console.log(response)
                 return res.json(
                     {
                         Message:"usuário não encontrado",
@@ -134,13 +115,13 @@ class User {
         }
         catch(e){
             return res.status(501).json(
-                await User.error(e)
+                await error(e)
             )
         }
     }
-    private static async Update(id:number,User:User):Promise<MethodResponse>{
+    private static async Update(id:number,User:User):Promise<MethodResponse<null>>{
         let response=await pool.query(`SELECT "Password","Name","Email","Createdate" FROM "public"."Users" WHERE id = $1;`,[id]);
-        if(!response.rows.length){
+        if(!response.rows.length||!User.Password){// the User.password is only to garant the password isn't null
             return {
                 Message:"id not found",
                 Status:404,
@@ -177,7 +158,7 @@ class User {
             Sucess:true
         }
     }
-    public static async UpdateRouter(req: Request, res: Response):Promise<Response>{
+    public static async UpdateRouter(req: Request, res: Response):Promise<Response<MethodResponse<null>>>{
         try{
             const {id}= req.params
             const user=req.body
@@ -221,11 +202,11 @@ class User {
         }
         catch(e){
             return res.status(501).json(
-                await User.error(e)
+                await error(e)
             )
         }
     }
-    public static async Delete(id:number,Password:string):Promise<MethodResponse>{
+    public static async Delete(id:number,Password:string):Promise<MethodResponse<null>>{
         let response = await pool.query(
             `SELECT "Password" FROM "public"."Users" WHERE id = $1;`,
             [id]
@@ -254,10 +235,10 @@ class User {
             }
         }
         catch(e){
-            return await User.error(e)
+            return await error(e)
         }
     }
-    public static async DeleteRouter(req: Request, res: Response):Promise<Response>{
+    public static async DeleteRouter(req: Request, res: Response):Promise<Response<MethodResponse<null>>>{
         try{
             const {id}= req.params
             const {Password}= req.body
@@ -309,21 +290,26 @@ class User {
             })
         }catch(e){
             return res.status(501).json(
-                await User.error(e)
+                await error(e)
             )
         }
     }
     private static generateToken(user:User):string{
-        const token = jwt.sign(
-        {
-            id: user.id,
-            Email: user.Email,
-            Generated:new Date()
-        },
-        process.env.JWT_SECRET,
-        { expiresIn: '2h' } 
-      );
-      return token
+        if(process.env.JWT_SECRET){
+            const token = jwt.sign(
+                {
+                    id: user.id,
+                    Email: user.Email,
+                    Generated:new Date()
+                },
+                process.env.JWT_SECRET,
+                { expiresIn: '2h' } 
+            );
+            return token
+        }
+        else{
+            return ""
+        }
     }
     public static async Login(req: Request, res: Response):Promise<Response>{
         try{
@@ -364,32 +350,62 @@ class User {
         }
         catch(e){
             return res.status(501).json(
-                await User.error(e)
+                await error(e)
             )
         }
         
     }
-    public static verifyLogin(Request: Request, res: Response,next: NextFunction):Response|void{
-        const authHeader = Request.headers.authorization
+    public static verifyLogin(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): void {
+        const authHeader = req.headers.authorization;
 
         if (!authHeader) {
-            return res.status(401).json({ message: 'Token não informado' })
+            res.status(401).json({
+            Message: "Token não informado",
+            Status: 401,
+            Sucess: false
+            });
+            return;
         }
 
-        const [, token] = authHeader.split(' ')
+        const [, token] = authHeader.split(" ");
+
+        if (!token) {
+            console.log("entrou")
+            res.status(401).json({
+            Message: "Token inválido",
+            Status: 401,
+            Sucess: false
+            });
+            return;
+        }
+
+        const JWT_SECRET = process.env.JWT_SECRET;
+
+        if (!JWT_SECRET) {
+            throw new Error("JWT_SECRET não definido");
+        }
+
         try {
-            const decoded = jwt.verify(token, process.env.JWT_SECRET)
-            Request.user = decoded
-            next()
+            const decoded = jwt.verify(token, JWT_SECRET);
+            req.user = decoded as User
+            next();
         } catch (err) {
-            return res.status(401).json({ message: 'Token inválido ou expirado' })
+            res.status(401).json({
+            Message: "Invalid Token",
+            Status: 401,
+            Sucess: false
+            });
         }
     }
-    public static async correctLogin(req: Request, res: Response,next: NextFunction){
+    public static async correctLogin(req: Request, res: Response,next: NextFunction):Promise<Response<MethodResponse<null>>|void>{
         const {id}= req.params
         let response = await pool.query(`SELECT "Email" FROM "public"."Users" WHERE id = $1;`, [id]);
         if(response.rows.length){
-            if(response.rows[0].Email!=req.user.Email || id!=req.user.id){
+            if(response.rows[0].Email!=req.user?.Email || id!=req.user?.id){
                 return res.status(401).json({
                     Message: "Invalid login",
                     Status: 401,
@@ -406,10 +422,10 @@ class User {
         }
         next()
     }
-    public static async PasswordChangeRoute(req: Request, res: Response){
+    public static async PasswordChangeRoute(req: Request, res: Response):Promise<Response<MethodResponse<null>>>{
         try{
             const {NewPassword,NewPasswordConfirm}=req.body
-            const id = req.user.id
+            const id = req.user?.id
             if(!id||!NewPassword||!NewPasswordConfirm){
                 return res.status(400).json({
                     Message:"Parameters null",
@@ -419,9 +435,9 @@ class User {
             }
             else if(NewPassword!==NewPasswordConfirm){
                 return res.status(400).json({
-                    "Message":"Passwords don't match",
-                    "Status":400,
-                    "Sucess":false
+                    Message:"Passwords don't match",
+                    Status:400,
+                    Sucess:false
                 })
             }
             const response = await pool.query(
@@ -429,9 +445,9 @@ class User {
             );
             if(!response.rows.length){
                 return res.status(404).json({
-                    "Message":"User not found",
-                    "Status":404,
-                    "Sucess":false
+                    Message:"User not found",
+                    Status:404,
+                    Sucess:false
                 })
             }
             const NewPasswordhash = await bcrypt.hash(NewPassword, 12);
@@ -447,10 +463,10 @@ class User {
             })
         }catch(e){
             return res.status(501).json(
-                await User.error(e)
+                await error(e)
             )
         }
     }
 }
 
-module.exports=User
+export default User

@@ -35,7 +35,7 @@ export default function Sidebar() {
 
   })
   const menu = [
-    { path: "/overview", text: "Overview", icon: OverviewImage },
+    { path: "/", text: "Overview", icon: OverviewImage },
     { path: "/balances", text: "Balances", icon: BalanceImage },
     { path: "/transactions", text: "Transactions", icon: TransactionsImage },
     { path: "/bills", text: "Bills", icon: BillsImage },
