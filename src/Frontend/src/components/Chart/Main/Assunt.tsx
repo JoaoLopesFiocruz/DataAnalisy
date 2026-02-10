@@ -1,15 +1,14 @@
 import axios from "axios";
-import { useEffect } from "react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-
-const data = [
-  { assunto: "Saúde Indígena", quantidade: 120 },
-  { assunto: "Educação", quantidade: 80 },
-  { assunto: "Meio Ambiente", quantidade: 45 },
-  { assunto: "Cultura", quantidade: 60 }
-];
+import { useEffect, useState } from "react";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,Label } from "recharts";
 
 export default function Grafico() {
+  const [data, setdata] = useState([
+  { label: "Saúde Indígena", count: 120 },
+  { label: "Educação", count: 80 },
+  { label: "Meio Ambiente", count: 45 },
+  { label: "Cultura", count: 60 }
+]);
   const api = axios.create({
       baseURL: "http://localhost:3000/data/Authors",
   });
@@ -17,19 +16,44 @@ export default function Grafico() {
     api.put("/",{
 	    "size":5
     }).then((response)=>{
-      console.log(response.data.data.map(()=>{}))
+      setdata(response.data.data)
     }).catch(()=>{
 
     })
-  })
+  },[])
   return (
     <ResponsiveContainer width="100%" height="100%">
-      <BarChart data={data}>
-        <XAxis dataKey="assunto" />
-        <YAxis />
-        <Tooltip />
-        <Bar dataKey="quantidade" />
-      </BarChart>
+      <BarChart
+  data={data}
+  margin={{ top: 50, right: 20, left: 0, bottom: 0 }}
+>
+  <Label
+    value="Number of publications of the most important authors"
+    position="top"
+    style={{
+      fill: "#e5e7eb",
+      fontSize: 16,
+      fontWeight: 600
+    }}
+  />
+
+  <XAxis
+    dataKey="label"
+    stroke="#e5e7eb"
+    tick={{ fill: "#e5e7eb", fontSize: 12 }}
+  />
+
+  <YAxis
+    domain={[0, "dataMax"]}
+    stroke="#e5e7eb"
+    tick={{ fill: "#e5e7eb", fontSize: 12 }}
+  />
+
+  <Tooltip />
+  <Bar dataKey="count" fill="#4f46e5" />
+</BarChart>
+
+      
     </ResponsiveContainer>
   );
 }

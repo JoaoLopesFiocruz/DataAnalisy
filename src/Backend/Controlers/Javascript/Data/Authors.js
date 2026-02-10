@@ -19,6 +19,7 @@ class Author {
             }
         }).then((response) => {
             const data = response.data._embedded.values.map((element) => {
+                console.log(element.count);
                 if (element.label) {
                     return {
                         label: element.label,
@@ -26,6 +27,7 @@ class Author {
                     };
                 }
             });
+            console.log(data);
             return {
                 Message: "query successfully",
                 data: data,

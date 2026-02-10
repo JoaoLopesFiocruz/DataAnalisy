@@ -35,13 +35,15 @@ class Author{
             }
         }).then((response)=>{
             const data=response.data._embedded.values.map((element: author) => {
+                console.log(element.count)
                 if(element.label){
-                  return {
+                    return {
                     label:element.label, 
                     count: element.count 
                 } as author;
                 }
             });
+            console.log(data)
             return {
                 Message:"query successfully",
                 data:data,

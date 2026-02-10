@@ -25,15 +25,27 @@ export default function App() {
   }
 
   return (
-    <>
+    <div className="overflow-hidden">
       {authorized ? <>
       <div className="flex">
         <Nav page={1} />
-        <div className="flex flex-1 bg-[#333]">
-          <Assunt />
+        <div className="grid grid-cols-2 bg-[#333] p-5 h-screen w-[100%]">
+          <div>
+            <Assunt />
+          </div>
+          <div>
+            <Assunt />
+          </div>
+          <div>
+            <Assunt />
+          </div>
+          <div>
+            <Assunt />
+          </div>
+
         </div>
       </div>
       </> : <AcessBloqued />}
-    </>
+    </div>
   );
 }
