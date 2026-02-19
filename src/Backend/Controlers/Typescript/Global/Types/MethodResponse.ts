@@ -4,3 +4,4 @@ export interface MethodResponse<DataType> {
   Status: number;
   Sucess: boolean;
 }
+ 

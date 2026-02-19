@@ -4,6 +4,7 @@ import Nav from "../components/Dashboard/BarraLateral/Main";
 import { useEffect, useState } from "react";
 import {auth} from "../Midleware/Authorization"
 import Assunt from "../components/Chart/Main/Assunt"
+import Subject from "../components/Chart/Main/Subject"
 
 export default function App() {
   const [authorized, setAuthorized] = useState(true); // null = carregando
@@ -29,20 +30,19 @@ export default function App() {
       {authorized ? <>
       <div className="flex">
         <Nav page={1} />
-        <div className="grid grid-cols-2 bg-[#333] p-5 h-screen w-[100%]">
+        <div className="grid grid-cols-2 bg-[#333] p-5 px-10 h-screen w-[100%]">
           <div>
             <Assunt />
+          </div>
+          <div>
+            <Subject />
           </div>
           <div>
             <Assunt />
           </div>
           <div>
-            <Assunt />
+            <Subject />
           </div>
-          <div>
-            <Assunt />
-          </div>
-
         </div>
       </div>
       </> : <AcessBloqued />}

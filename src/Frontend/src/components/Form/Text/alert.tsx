@@ -9,7 +9,7 @@ export default function Alert({ text, sucess, code }: AppProps) {
     <>
       <div
         id="alert"
-        className={`w-[300px] h-[190px] absolute rounded-[30px] p-[20px] flex items-center justify-center flex-col gap-5 text-4xl left-[50%]
+        className={`w-[300px] h-[190px] absolute rounded-[30px] p-[20px] flex items-center justify-center flex-col gap-5 text-4xl left-1/2 -translate-x-1/2
         ${sucess ? "bg-[#177245]" : "bg-[#ff0000b0]"}`}
       >
         <h1 className="text-center w-full text-[#F5F5F5]">
