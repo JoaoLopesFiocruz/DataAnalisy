@@ -13,10 +13,7 @@ declare module 'express-serve-static-core' {
 }
 declare class Subject {
     private static readonly api;
-    static SubjectCount(): Promise<MethodResponse<{
-        name: string;
-        value: number;
-    }[] | null>>;
+    private static SubjectCount;
     static SubjectCountRoute(req: Request, res: Response): Promise<Response<MethodResponse<{
         name: string;
         value: number;

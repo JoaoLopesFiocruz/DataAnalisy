@@ -30,6 +30,7 @@ export default function Grafico() {
   <Label
     value="Number of publications of the most important authors"
     position="top"
+    offset={20}
     style={{
       fill: "#e5e7eb",
       fontSize: 16,

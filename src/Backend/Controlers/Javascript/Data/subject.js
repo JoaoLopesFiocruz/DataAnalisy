@@ -18,7 +18,7 @@ class Subject {
                 Count[key] = (Count[key] ?? 0) + item.count;
             });
             const sorted = Object.entries(Count)
-                .sort((a, b) => a[1] - b[1]) // crescente
+                .sort((a, b) => a[1] - b[1])
                 .map(([name, value]) => ({ name, value }));
             return {
                 Message: "Query successfully",
@@ -37,7 +37,7 @@ class Subject {
     }
 }
 Subject.api = axios.create({
-    baseURL: "https://api.treinamento.saudeindigena.icict.fiocruz.br/api/discover/facets/subject"
+    baseURL: "https://api.treinamento.saudeindigena.icict.fiocruz.br/api/discover/facets/subject?size=7"
 });
 export default Subject;
 //# sourceMappingURL=subject.js.map

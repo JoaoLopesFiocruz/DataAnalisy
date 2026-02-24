@@ -35,7 +35,8 @@ export default function SubjectChart() {
             layout="vertical"
             >
                 <Label
-                    value="Number of publications by subject"
+                    value="Number of publications by the most importants subjects"
+                    offset={20}
                     position="top"
                     style={{
                       fill: "#e5e7eb",
@@ -63,7 +64,7 @@ export default function SubjectChart() {
                 position="insideRight"
                 formatter={(value) => value?.toLocaleString("pt-BR")}
                 fill="#fff"
-                fontSize={8}
+                fontSize={12}
                 />
             </Bar>
             </BarChart>

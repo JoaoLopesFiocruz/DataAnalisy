@@ -17,7 +17,7 @@ declare module 'express-serve-static-core' {
 }
     class Subject{
         private static readonly api=axios.create({
-            baseURL:"https://api.treinamento.saudeindigena.icict.fiocruz.br/api/discover/facets/subject"
+            baseURL:"https://api.treinamento.saudeindigena.icict.fiocruz.br/api/discover/facets/subject?size=7"
         });
         private static async SubjectCount(): Promise<
       MethodResponse<{ name: string; value: number }[]|null>

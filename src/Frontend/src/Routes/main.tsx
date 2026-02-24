@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import {auth} from "../Midleware/Authorization"
 import Assunt from "../components/Chart/Main/Assunt"
 import Subject from "../components/Chart/Main/Subject"
+import VideoCount from "../components/Chart/Main/VideoCount"
 
 export default function App() {
   const [authorized, setAuthorized] = useState(true); // null = carregando
@@ -38,7 +39,7 @@ export default function App() {
             <Subject />
           </div>
           <div>
-            <Assunt />
+            <VideoCount />
           </div>
           <div>
             <Subject />
