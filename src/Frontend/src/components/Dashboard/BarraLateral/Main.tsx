@@ -52,7 +52,7 @@ export default function Sidebar() {
   return (
     <aside className="flex flex-col w-[280px] h-screen bg-[#191919] items-center py-[48px] px-[28px]">
       <span className="text-[#FFF] text-[24px] font-poppins font-extrabold mb-[40px]">
-        FINE<span className="font-medium">bank</span>.IO
+        Native<span className="font-medium">Brazil</span>
       </span>
 
       <ul className="px-[16px] gap-[16px] flex flex-col w-[224px] mb-auto">

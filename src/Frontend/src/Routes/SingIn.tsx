@@ -119,7 +119,7 @@ export default function App() {
         <div className="flex flex-col items-center flex-1 bg-[#444]">
         <form className="h-screen flex flex-col items-center justify-center" onSubmit={(e) => e.preventDefault()}>
             <div className="w-[400px]">
-                <h1 className="font-inter text-800 text-[#00ffe5] text-[40px] text-center">FINE<span className="text-500">bank</span>.IO</h1>
+                <h1 className="font-inter text-800 text-[#00ffe5] text-[40px] text-center">Native<span className="text-500">Brazil</span></h1>
                 <p className="text-800 font-poppins text-[20px] text-center w-full text-[#00ffe5]" >Create an account</p>
                 <div className="flex flex-col gap-[24px]">
                     <TextForm type="text" name="Name" placeholder="Hermenegildo" textspan="Name"/>

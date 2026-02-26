@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import {auth} from "../Midleware/Authorization"
 import Assunt from "../components/Chart/Main/Assunt"
 import Subject from "../components/Chart/Main/Subject"
+import Native from "../components/Chart/Main/Native"
 import VideoCount from "../components/Chart/Main/VideoCount"
 
 export default function App() {
@@ -42,7 +43,7 @@ export default function App() {
             <VideoCount />
           </div>
           <div>
-            <Subject />
+            <Native />
           </div>
         </div>
       </div>

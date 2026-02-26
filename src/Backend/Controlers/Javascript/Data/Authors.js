@@ -6,11 +6,7 @@ import { error } from "console";
 class Author {
     static async MostImportants(size) {
         if (!size) {
-            return {
-                Message: "Size is null",
-                Status: 400,
-                Sucess: false
-            };
+            size = null;
         }
         return Author.api.get("", {
             params: {
@@ -19,7 +15,6 @@ class Author {
             }
         }).then((response) => {
             const data = response.data._embedded.values.map((element) => {
-                console.log(element.count);
                 if (element.label) {
                     return {
                         label: element.label,
@@ -27,7 +22,6 @@ class Author {
                     };
                 }
             });
-            console.log(data);
             return {
                 Message: "query successfully",
                 data: data,
@@ -76,6 +70,55 @@ class Author {
                 Sucess: false
             });
         }
+    }
+    static async Nativepercent() {
+        try {
+            const AuthorsCount = await Author.MostImportants();
+            const datareturned = { Native: 0, NotNative: 0 };
+            const NativeAuthors = AuthorsCount.data?.map((element) => {
+                if (element.label
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .toUpperCase()
+                    .includes("INDIGENA") || element.label
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .toUpperCase()
+                    .includes("INDIGENAS")) {
+                    return element;
+                }
+                else {
+                    return undefined;
+                }
+            }).filter((element) => element !== undefined);
+            var SumNativeAuthors = 0;
+            NativeAuthors?.forEach((element) => {
+                SumNativeAuthors += element.count;
+            });
+            datareturned.Native = SumNativeAuthors;
+            var SumAuthors = 0;
+            AuthorsCount.data?.forEach((element) => {
+                SumAuthors += element.count;
+            });
+            datareturned.NotNative = SumAuthors - SumNativeAuthors;
+            return {
+                Message: "Search successfully",
+                data: datareturned,
+                Status: 200,
+                Sucess: true
+            };
+        }
+        catch (e) {
+            return {
+                Message: "Internal error",
+                Status: 501,
+                Sucess: false
+            };
+        }
+    }
+    static async NativePercentRouter(req, res) {
+        const query = await Author.Nativepercent();
+        return res.status(200).json(query);
     }
 }
 Author.api = axios.create({

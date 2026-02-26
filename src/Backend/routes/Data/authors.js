@@ -4,5 +4,6 @@ var router = express.Router();
 
 /* GET home page. */
 router.put('/', Authors.MostImportantsRoute);
+router.get('/native', Authors.NativePercentRouter);
 
 export default router;

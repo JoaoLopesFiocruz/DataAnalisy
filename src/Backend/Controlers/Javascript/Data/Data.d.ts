@@ -6,7 +6,7 @@ declare class Book {
     private static YearCount;
     static SubjectCountRoute(req: Request, res: Response): Promise<Response<MethodResponse<{
         [language: string]: number;
-    } | null>>>;
+    }>>>;
 }
 export default Book;
 //# sourceMappingURL=Data.d.ts.map

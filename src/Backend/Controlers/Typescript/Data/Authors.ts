@@ -19,15 +19,10 @@ class Author{
     private static readonly api=axios.create({
         baseURL:"https://api.treinamento.saudeindigena.icict.fiocruz.br/api/discover/facets/author"
     });
-    private static async MostImportants(size:number):Promise<MethodResponse<author[]>|MethodResponse<null>> {
+    private static async MostImportants(size?:number|null):Promise<MethodResponse<author[]>|MethodResponse<null>> {
         if(!size){
-            return {
-                Message:"Size is null",
-                Status:400,
-                Sucess:false
-            }
+            size=null
         }
-        
         return Author.api.get("", {   // "" significa "usar a baseURL"
             params: {
                 page: 0,
@@ -35,7 +30,6 @@ class Author{
             }
         }).then((response)=>{
             const data=response.data._embedded.values.map((element: author) => {
-                console.log(element.count)
                 if(element.label){
                     return {
                     label:element.label, 
@@ -43,7 +37,6 @@ class Author{
                 } as author;
                 }
             });
-            console.log(data)
             return {
                 Message:"query successfully",
                 data:data,
@@ -90,6 +83,58 @@ class Author{
                 Sucess:false
             })
         }
+    }
+    private static async Nativepercent():Promise<
+    MethodResponse<{Native:Number,NotNative:Number}>
+    > {
+        try{
+            const AuthorsCount=await Author.MostImportants()
+            const datareturned={Native:0,NotNative:0}
+            const NativeAuthors=AuthorsCount.data?.map((element: unknown) => {
+                
+                if (
+                (element as any).label
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .toUpperCase()
+                    .includes("INDIGENA")||(element as any).label
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .toUpperCase()
+                    .includes("INDIGENAS")
+                ) {
+                return element;
+                } else {
+                return undefined;
+                }
+            }).filter((element) => element !== undefined)
+            var SumNativeAuthors=0
+            NativeAuthors?.forEach((element:any) => {
+                SumNativeAuthors+=element.count
+            });
+            datareturned.Native=SumNativeAuthors
+            var SumAuthors=0
+            AuthorsCount.data?.forEach((element:any) => {
+                SumAuthors+=element.count
+            });
+            datareturned.NotNative=SumAuthors-SumNativeAuthors
+            return {
+                Message:"Search successfully",
+                data:datareturned,
+                Status:200,
+                Sucess:true
+            }
+        }catch(e){
+            return {
+                Message:"Internal error",
+                Status:501,
+                Sucess:false
+            }
+        }
+    }
+    public static async NativePercentRouter(req:Request,res:Response):Promise<Response<MethodResponse<{Native:Number,NotNative:Number}>>>{
+        const query:MethodResponse<{Native:Number,NotNative:Number}>=await Author.Nativepercent()
+        return res.status(200).json(query)
     }
 }
 export default Author
