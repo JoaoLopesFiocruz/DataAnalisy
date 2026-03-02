@@ -26,86 +26,90 @@ This application connects the frontend to the database and the archive server. I
 ### Backend Routes
 #### get /users/:id
 This route retrieves a specific user by ID and returns their data.
-    ``` json
+```json
+{
+    "Message": "Consulta Realizada com Sucesso",
+    "Data": [
         {
-            "Message": "Consulta Realizada com Sucesso",   
-            "Data": [   
-                {   
-                    "id": 2,   
-                    "Name": "Hermenegildo",   
-                    "Email": "Email.Email.com"   
-                }   
-            ],   
-            "Status": 200,   
-            "Sucess": true   
+            "id": 2,
+            "Name": "Hermenegildo",
+            "Email": "Email.Email.com"
         }
-    ```   
+    ],
+    "Status": 200,
+    "Sucess": true
+}
+```
 #### post /users
-This route creates a new user in the database.   
-    ``` json
-        Request
-        {
-            "Password":"123",
-            "Name":"Hermenegildo123", 
-            "Email":"Hermenegildo123@god.com"
-        }
-        Response
-        {
-            "Message": "Create suceffuly",
-            "Status": 200,
-            "Sucess": true
-        }
-    ```   
+This route creates a new user in the database.  
+**Request**
+```json
+{
+    "Password":"123",
+    "Name":"Hermenegildo123", 
+    "Email":"Hermenegildo123@god.com"
+}
+```
+**Response**
+```json
+{
+    "Message": "Create suceffuly",
+    "Status": 200,
+    "Sucess": true
+}
+```
 #### put /users/:id
 This route updates a user in the database, allowing modification of account information.
 Note: All parameters are optional except for the password.
-    ``` json
-        /users/3
-        Request
-        {
-            "Password":"123",
-            "Name":"Hermenegildo",
-            "Email":"Hermenegildo123@god.com"
-        }
-        Response
-        {
-            "Message": "Update Suceffully Hermenegildo",
-            "Status": 200,
-            "Sucess": true
-        }
-    ```   
+**/users/3 Request**
+```json
+{
+    "Password":"123",
+    "Name":"Hermenegildo",
+    "Email":"Hermenegildo123@god.com"
+}
+```
+**/users/3 Response**
+```json
+{
+    "Message": "Update Suceffully Hermenegildo",
+    "Status": 200,
+    "Sucess": true
+}
+```    
+    
 #### del /users/:id
 This route deletes a user's account.
-            ``` json
-                /users/2
-                Request
-                {
-                    "Password":"12345"
-                }
-                Response
-                {
-                    "Message": "Deleted Successfully",
-                    "Status": 200,
-                    "Sucess": true
-                }
-            ```   
+``` json
+    /users/2
+    Request
+    {
+        "Password":"12345"
+    }
+    Response
+    {
+        "Message": "Deleted Successfully",
+        "Status": 200,
+        "Sucess": true
+    }
+```   
 #### put /users/Login
 This route is used to create a valid token to log in to the site.
-    ``` json
-        request
-        {
-            "Password":"123",
-            "Name":"Hermenegildo123",
-            "Email":"Hermenegildo123@god.com"
-        }
-        Response
-        {
-            "Message": "Login Successfully",
-            "Data": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiRW1haWwiOiJIZXJtZW5lZ2lsZG8xMjNAZ29kLmNvbSIsIkdlbmVyYXRlZCI6IjIwMjUtMTItMjNUMTU6Mjg6NTIuNDk4WiIsImlhdCI6MTc2NjUwMzczMiwiZXhwIjoxNzY2NTEwOTMyfQ.1cNCrV7yW31p1i4fVjhlibDdkv79g1HhvspYY9Rlfvw",
-            "Status": 200,
-            "Sucess": true
-        }
-    ```   
+``` json
+    request
+    {
+        "Password":"123",
+        "Name":"Hermenegildo123",
+        "Email":"Hermenegildo123@god.com"
+    }
+    Response
+    {
+        "Message": "Login Successfully",
+        "Data": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiRW1haWwiOiJIZXJtZW5lZ2lsZG8xMjNAZ29kLmNvbSIsIkdlbmVyYXRlZCI6IjIwMjUtMTItMjNUMTU6Mjg6NTIuNDk4WiIsImlhdCI6MTc2NjUwMzczMiwiZXhwIjoxNzY2NTEwOTMyfQ.1cNCrV7yW31p1i4fVjhlibDdkv79g1HhvspYY9Rlfvw",
+        "Status": 200,
+        "Sucess": true
+    }
+```   
 
 ## Archive
 This application is used to manage files, specifically images. It saves, updates, deletes, and responds to file requests from the backend.
