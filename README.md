@@ -1,8 +1,11 @@
 # Project Name
-    ## FineBank - Financial Management DashBoard
-    This project was developed by Fiocruz to perform a statistical analysis of the Manguinhos Library. 
+    Native Brasil- Native Population Statistic DashBoard
+    This project was developed by Fiocruz to perform a statistical analysis of the Native Populations of Brazil. 
 # Programer
     João Gabriel Pereira Lopes
+    Aline da Silva Alve
+    Rosane Abdala Lins
+    Fabrício Procaci Santiago
 # Technologies
     - React
     - Node
@@ -16,7 +19,7 @@ This Institutional Scientific Initiation Scholarship Program is conducted at ICI
 # Objective
 The objective of this research is to investigate and develop accessible and inclusive digital technologies, focusing on breaking barriers experienced by people with disabilities in accessing health information through technology.  
 In this context, the objective is to produce theoretical and technical knowledge that contributes to accessibility design practices, supporting the diverse demands of the Brazilian population, in accordance with the principles of the Unified Health System (SUS)..  
-At the end of the project, the student will develop a dashboard to analyze the financial balance of the Manguinhos Library..
+At the end of the project, the student will develop a dashboard to analyze the data about the Native Populations of Brazil.
 # Applications
 This website has three applications that communicate with each other. This separation makes the system more secure, scalable, and lighter on the server, since it allows each application to run on a different server if necessary.
 ## Frontend
