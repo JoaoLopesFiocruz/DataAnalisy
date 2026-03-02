@@ -2,7 +2,7 @@
     ## FineBank - Financial Management DashBoard
     This project is constructed in Fiocruz to make an statistic analyse from the Library Manguinhos. 
 # Programer
-    ## João Gabriel Pereira Lopes
+    João Gabriel Pereira Lopes
 # Technologies
     - React
     - Node
