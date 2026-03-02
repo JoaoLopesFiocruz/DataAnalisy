@@ -10,7 +10,7 @@
     - SQL
     - Tailwind
 # Company
-    ## Fiocruz/ICICT/CTIC
+## Fiocruz/ICICT/CTIC
     This project is a project from the Institutional Program of Scientific Initiation Scholarships of João Gabriel Pereira Lopes with the advisors Rosane Abdala Lins and Aline da Silva Alves.  
     This Institutional Program of Scientific Initiation Scholarships is making in the ICIT(Institute of Communication and Scientific Information) with the financing of the PIBIC(Institutional Program of Scientific Initiation Scholarships) and the organization from ESPJV(Joaquim Venâncio Polytechnic School of Health)
 # Objective
@@ -19,7 +19,7 @@ In this direction the objetive is the producion of knowledge teoric and technici
 At the end, this student will develop a dashboard to analyze the balance of the Manguinhos library.
 # Applications
 This website have three application communicating with each other, this separacion is to make the site more security, scalable and more light to the server, one time it's possible I run each aplication in a diference server.
-    ## Frontend
+## Frontend
     This application is the visual, here, I take the data and transform in React components, showing a beautiful interface with the data, here, I show Graphics, Images, button... This aplication is runned by the user in your browser, it make the user can use the service and view the data in a better visual form.
     ## Backend
     This application is to connect the frontend to database and the archive server, this application take the frontend data requests, valid, control the acess, answer the requets with the data requested, if needed, processes the information before send to the frontend.
